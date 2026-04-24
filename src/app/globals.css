@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/* Design tokens — mirrored in src/constants/design.ts. */
+@theme {
+  --color-parchment: #e8dcc4;
+  --color-parchment-light: #fdf4e0;
+  --color-parchment-darker: #e0d2b4;
+  --color-parchment-grad-start: #f0e4ca;
+  --color-ink: #3a2817;
+  --color-ink-muted: #5a3a1a;
+  --color-sepia: #6b4423;
+  --color-sepia-light: #8b6f47;
+  --color-rust: #8b4a2b;
+  --color-amber: #c9843d;
+  --color-sand: #d4a574;
+  --color-slate: #5a7a9a;
+  --color-modern-blue: #3a6a8a;
+  --color-modern-blue-dark: #2a5a7a;
+  --color-land-fill: #e8d8b8;
+  --color-land-stroke: #6b4423;
+  --color-coast-emphasis: #5a3a1a;
+  --color-hatch: #8b6f47;
+
+  --font-serif: var(--font-cormorant), "EB Garamond", Georgia, serif;
+  --font-sans: var(--font-inter), sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button:focus-visible {
+  outline: 1px dashed currentColor;
+  outline-offset: 2px;
+}
+
+/* Hide the range thumb but keep the slider draggable. */
+.invisible-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: grab;
+}
+
+.invisible-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  cursor: grab;
+}
+
+.invisible-slider::-moz-range-thumb {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: grab;
+}

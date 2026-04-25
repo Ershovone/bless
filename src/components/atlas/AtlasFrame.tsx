@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import { FLEURON_GLYPH } from "@/constants/design";
-import { MAP_SIZE } from "@/constants/map";
 
 const DESKTOP_FRAME_HEIGHT_PX = 900;
+const MOBILE_FRAME_HEIGHT_VH = 70;
 
 const CORNER_CLS =
   "pointer-events-none absolute z-3 text-[26px] text-(--color-rust) opacity-60";
@@ -15,13 +15,13 @@ const FRAME_STYLE: CSSProperties = {
   marginTop: 20,
   marginBottom: 20,
   ["--map-height" as string]: `${DESKTOP_FRAME_HEIGHT_PX}px`,
-  ["--map-aspect" as string]: `${MAP_SIZE.width} / ${MAP_SIZE.height}`,
+  ["--map-height-mobile" as string]: `${MOBILE_FRAME_HEIGHT_VH}vh`,
 };
 
 export function AtlasFrame({ children }: { children: ReactNode }) {
   return (
     <div
-      className="relative z-1 mx-auto border border-(--color-sepia-light) h-(--map-height) max-md:h-auto max-md:aspect-(--map-aspect)"
+      className="relative z-1 mx-auto border border-(--color-sepia-light) h-(--map-height) max-md:h-(--map-height-mobile)"
       style={FRAME_STYLE}
     >
       <div className="absolute inset-0 overflow-hidden">{children}</div>

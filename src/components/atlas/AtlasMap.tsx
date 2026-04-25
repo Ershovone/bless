@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { buildRoutePath, interpolateRoute } from "@/lib/geo/bezier";
+import { buildRoutePath } from "@/lib/geo/bezier";
 import { CITIES } from "@/data/cities";
 import { COMPANIONS } from "@/data/companions";
 import { JOURNEYS } from "@/data/journeys";
@@ -31,8 +31,6 @@ import { Traveler } from "./layers/Traveler";
 export function AtlasMap() {
   const activeJ = useAtlasStore((s) => s.activeJ);
   const modernView = useAtlasStore((s) => s.modernView);
-  const playing = useAtlasStore((s) => s.playing);
-  const playT = useAtlasStore((s) => s.playT);
   const selectedCompanion = useAtlasStore((s) => s.selectedCompanion);
 
   usePlayback();
@@ -45,11 +43,6 @@ export function AtlasMap() {
   const routePathD = useMemo(
     () => buildRoutePath(journey.route, CITIES, proj),
     [journey, proj],
-  );
-
-  const travelerPos = useMemo(
-    () => interpolateRoute(journey.route, CITIES, proj, playT),
-    [journey, proj, playT],
   );
 
   const companion = selectedCompanion ? COMPANIONS[selectedCompanion] : null;
@@ -66,9 +59,9 @@ export function AtlasMap() {
         <CompassRose />
         <ScaleBar proj={proj} />
         <GhostRoutes activeJ={activeJ} proj={proj} />
-        <ActiveRoute d={routePathD} playing={playing} playT={playT} />
+        <ActiveRoute d={routePathD} />
         {companion && <CompanionRoute companion={companion} activeJ={activeJ} proj={proj} />}
-        {playing && <Traveler position={travelerPos} />}
+        <Traveler route={journey.route} proj={proj} />
         <CitiesLayer proj={proj} route={journey.route} />
       </MapSvg>
 
@@ -81,7 +74,6 @@ export function AtlasMap() {
       )}
 
       <ZoomControls
-        zoom={zoomPan.zoomDisplay}
         onZoomIn={zoomPan.zoomIn}
         onZoomOut={zoomPan.zoomOut}
         onReset={zoomPan.reset}

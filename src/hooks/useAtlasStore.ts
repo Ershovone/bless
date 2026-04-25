@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { CityId, CompanionId } from "@/types/atlas";
 import { JOURNEYS } from "@/data/journeys";
-import { JOURNEY_YEAR_RANGES, YEAR_RANGE } from "@/constants/map";
+import { JOURNEY_YEAR_RANGES, YEAR_RANGE, ZOOM } from "@/constants/map";
 
 export function journeyIdxForYear(year: number): number {
   for (const range of JOURNEY_YEAR_RANGES) {
@@ -19,6 +19,7 @@ type AtlasState = {
   scrubYear: number | null;
   playing: boolean;
   playT: number;
+  zoomDisplay: number;
 
   setActiveJ: (i: number) => void;
   setSelectedCity: (id: CityId | null) => void;
@@ -30,6 +31,7 @@ type AtlasState = {
   setScrubYear: (y: number | null) => void;
   setPlaying: (p: boolean) => void;
   setPlayT: (t: number) => void;
+  setZoomDisplay: (z: number) => void;
   resetPlayback: () => void;
 };
 
@@ -42,6 +44,7 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   scrubYear: null,
   playing: false,
   playT: 1,
+  zoomDisplay: ZOOM.min,
 
   setActiveJ: (i) => {
     if (i === get().activeJ) return;
@@ -71,5 +74,6 @@ export const useAtlasStore = create<AtlasState>((set, get) => ({
   },
   setPlaying: (p) => set({ playing: p }),
   setPlayT: (t) => set({ playT: t }),
+  setZoomDisplay: (z) => set({ zoomDisplay: z }),
   resetPlayback: () => set({ playT: 1, playing: false }),
 }));

@@ -1,10 +1,14 @@
+"use client";
+
+import { useAtlasStore } from "@/hooks/useAtlasStore";
+
 type ActiveRouteProps = {
   d: string;
-  playing: boolean;
-  playT: number;
 };
 
-export function ActiveRoute({ d, playing, playT }: ActiveRouteProps) {
+export function ActiveRoute({ d }: ActiveRouteProps) {
+  const playing = useAtlasStore((s) => s.playing);
+  const playT = useAtlasStore((s) => s.playT);
   const dashArray = playing ? `${playT} ${1.001 - playT}` : "6 3";
 
   return (

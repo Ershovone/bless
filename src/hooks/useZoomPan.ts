@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MAP_SIZE, ZOOM } from "@/constants/map";
+import { useAtlasStore } from "./useAtlasStore";
 
 type DragState = { sx: number; sy: number; px: number; py: number; z: number };
 type PinchState = { startDist: number; startZoom: number };
@@ -15,7 +16,6 @@ function clampZoom(z: number): number {
 type ViewBox = { x: number; y: number; w: number; h: number };
 
 export type ZoomPanState = {
-  zoomDisplay: number;
   initialViewBox: ViewBox;
   zoomIn: () => void;
   zoomOut: () => void;
@@ -80,7 +80,6 @@ function touchMidpoint(t1: Touch, t2: Touch): { x: number; y: number } {
 }
 
 export function useZoomPan(): ZoomPanState {
-  const [zoomDisplay, setZoomDisplay] = useState<number>(ZOOM.min);
   const [dragging, setDragging] = useState(false);
 
   const zoomRef = useRef<number>(ZOOM.min);
@@ -101,7 +100,7 @@ export function useZoomPan(): ZoomPanState {
     if (rafRef.current !== null) return;
     rafRef.current = requestAnimationFrame(() => {
       rafRef.current = null;
-      setZoomDisplay(zoomRef.current);
+      useAtlasStore.getState().setZoomDisplay(zoomRef.current);
     });
   }, []);
 
@@ -277,7 +276,6 @@ export function useZoomPan(): ZoomPanState {
   const initialViewBox = useMemo(() => viewBoxFor(ZOOM.min, { x: 0, y: 0 }), []);
 
   return {
-    zoomDisplay,
     initialViewBox,
     zoomIn,
     zoomOut,

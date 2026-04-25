@@ -1,7 +1,8 @@
 "use client";
 
+import { useAtlasStore } from "@/hooks/useAtlasStore";
+
 type ZoomControlsProps = {
-  zoom: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onReset: () => void;
@@ -10,7 +11,8 @@ type ZoomControlsProps = {
 const BUTTON_CLS =
   "flex h-8 w-10 items-center justify-center border border-(--color-sepia-light) bg-(--color-parchment-light) text-xl text-(--color-ink) hover:bg-(--color-parchment-darker)";
 
-export function ZoomControls({ zoom, onZoomIn, onZoomOut, onReset }: ZoomControlsProps) {
+export function ZoomControls({ onZoomIn, onZoomOut, onReset }: ZoomControlsProps) {
+  const zoom = useAtlasStore((s) => s.zoomDisplay);
   return (
     <div className="absolute bottom-5 left-5 z-[5] flex flex-col gap-1 border border-(--color-sepia-light) bg-(--color-parchment-light)/90 p-1.5 shadow-[0_4px_12px_rgba(74,50,30,0.25)]">
       <button type="button" className={BUTTON_CLS} onClick={onZoomIn} aria-label="Zoom in">

@@ -28,14 +28,33 @@ export type ZoomPanState = {
   svgRef: React.RefObject<SVGSVGElement | null>;
 };
 
-function viewBoxFor(zoom: number, pan: { x: number; y: number }): ViewBox {
+// Effective viewBox region actually rendered into the container under
+// preserveAspectRatio="xMidYMid slice". When container aspect != viewBox
+// aspect, the slice axis is centered and the off-axis part is hidden.
+function effectiveSliceSize(vbW: number, vbH: number, container: { width: number; height: number }): { evisW: number; evisH: number } {
+  const vbAspect = vbW / vbH;
+  const cAspect = container.width / container.height;
+  if (cAspect < vbAspect) return { evisW: vbH * cAspect, evisH: vbH };
+  return { evisW: vbW, evisH: vbW / cAspect };
+}
+
+function viewBoxFor(
+  zoom: number,
+  pan: { x: number; y: number },
+  container: { width: number; height: number } | null,
+): ViewBox {
   const { width, height } = MAP_SIZE;
   const w = width / zoom;
   const h = height / zoom;
   const cx = width / 2 + pan.x;
   const cy = height / 2 + pan.y;
-  const x = Math.max(0, Math.min(width - w, cx - w / 2));
-  const y = Math.max(0, Math.min(height - h, cy - h / 2));
+  const evis = container ? effectiveSliceSize(w, h, container) : { evisW: w, evisH: h };
+  const minX = (evis.evisW - w) / 2;
+  const maxX = width - (w + evis.evisW) / 2;
+  const minY = (evis.evisH - h) / 2;
+  const maxY = height - (h + evis.evisH) / 2;
+  const x = Math.max(minX, Math.min(maxX, cx - w / 2));
+  const y = Math.max(minY, Math.min(maxY, cy - h / 2));
   return { x, y, w, h };
 }
 
@@ -53,8 +72,11 @@ function pointInMapCoords(
   const rect = el.getBoundingClientRect();
   const mx = (clientX - rect.left) / rect.width;
   const my = (clientY - rect.top) / rect.height;
-  const vb = viewBoxFor(zoom, pan);
-  return { mx, my, ptX: vb.x + mx * vb.w, ptY: vb.y + my * vb.h };
+  const vb = viewBoxFor(zoom, pan, rect);
+  const { evisW, evisH } = effectiveSliceSize(vb.w, vb.h, rect);
+  const visX = vb.x + (vb.w - evisW) / 2;
+  const visY = vb.y + (vb.h - evisH) / 2;
+  return { mx, my, ptX: visX + mx * evisW, ptY: visY + my * evisH };
 }
 
 function panForZoomAround(
@@ -93,7 +115,7 @@ export function useZoomPan(): ZoomPanState {
   const flushView = useCallback((): void => {
     const el = svgRef.current;
     if (!el) return;
-    applyViewBox(el, viewBoxFor(zoomRef.current, panRef.current));
+    applyViewBox(el, viewBoxFor(zoomRef.current, panRef.current, el.getBoundingClientRect()));
   }, []);
 
   const scheduleDisplaySync = useCallback((): void => {
@@ -175,8 +197,8 @@ export function useZoomPan(): ZoomPanState {
       const dy = t.clientY - d.sy;
       if (Math.abs(dx) + Math.abs(dy) > TAP_MAX_MOVE_PX) touchMovedRef.current = true;
       const rect = el.getBoundingClientRect();
-      const scale = MAP_SIZE.width / d.z / rect.width;
-      setZoomPan(zoomRef.current, { x: d.px - dx * scale, y: d.py - dy * scale });
+      const sliceScale = Math.max(rect.width / (MAP_SIZE.width / d.z), rect.height / (MAP_SIZE.height / d.z));
+      setZoomPan(zoomRef.current, { x: d.px - dx / sliceScale, y: d.py - dy / sliceScale });
     };
 
     const onTouchEnd = (e: TouchEvent): void => {
@@ -212,12 +234,16 @@ export function useZoomPan(): ZoomPanState {
       }
     };
 
+    const onResize = (): void => flushView();
+
     el.addEventListener("wheel", onWheel, { passive: false });
     el.addEventListener("touchstart", onTouchStart, { passive: true });
     el.addEventListener("touchmove", onTouchMove, { passive: false });
     el.addEventListener("touchend", onTouchEnd, { passive: true });
     el.addEventListener("touchcancel", onTouchCancel, { passive: true });
     el.addEventListener("click", onClickCapture, true);
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
 
     return () => {
       el.removeEventListener("wheel", onWheel);
@@ -226,9 +252,11 @@ export function useZoomPan(): ZoomPanState {
       el.removeEventListener("touchend", onTouchEnd);
       el.removeEventListener("touchcancel", onTouchCancel);
       el.removeEventListener("click", onClickCapture, true);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
-  }, [setZoomPan]);
+  }, [setZoomPan, flushView]);
 
   const zoomIn = useCallback(() => {
     setZoomPan(clampZoom(zoomRef.current * ZOOM.step), panRef.current);
@@ -259,10 +287,10 @@ export function useZoomPan(): ZoomPanState {
       const d = dragRef.current;
       if (!d) return;
       const rect = e.currentTarget.getBoundingClientRect();
-      const scale = MAP_SIZE.width / d.z / rect.width;
+      const sliceScale = Math.max(rect.width / (MAP_SIZE.width / d.z), rect.height / (MAP_SIZE.height / d.z));
       setZoomPan(zoomRef.current, {
-        x: d.px - (e.clientX - d.sx) * scale,
-        y: d.py - (e.clientY - d.sy) * scale,
+        x: d.px - (e.clientX - d.sx) / sliceScale,
+        y: d.py - (e.clientY - d.sy) / sliceScale,
       });
     },
     [setZoomPan],
@@ -273,7 +301,7 @@ export function useZoomPan(): ZoomPanState {
     setDragging(false);
   }, []);
 
-  const initialViewBox = useMemo(() => viewBoxFor(ZOOM.min, { x: 0, y: 0 }), []);
+  const initialViewBox = useMemo(() => viewBoxFor(ZOOM.min, { x: 0, y: 0 }, null), []);
 
   return {
     initialViewBox,

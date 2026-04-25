@@ -20,6 +20,23 @@ export function CityDetailPanel() {
     return () => window.removeEventListener("keydown", onKey);
   }, [selectedCity, setSelectedCity]);
 
+  useEffect(() => {
+    if (!selectedCity) return;
+    const scrollY = window.scrollY;
+    const body = document.body;
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    return () => {
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      window.scrollTo(0, scrollY);
+    };
+  }, [selectedCity]);
+
   if (!selectedCity || !CITIES[selectedCity]) return null;
 
   const city = CITIES[selectedCity];

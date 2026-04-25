@@ -5,7 +5,12 @@ import { MAP_SIZE, ZOOM } from "@/constants/map";
 import { useAtlasStore } from "./useAtlasStore";
 
 type DragState = { sx: number; sy: number; px: number; py: number; z: number };
-type PinchState = { startDist: number; startZoom: number };
+type PinchState = {
+  startDist: number;
+  startZoom: number;
+  anchorPtX: number;
+  anchorPtY: number;
+};
 
 const TAP_MAX_MOVE_PX = 8;
 
@@ -85,12 +90,15 @@ function panForZoomAround(
   mx: number,
   my: number,
   nextZoom: number,
+  container: { width: number; height: number },
 ): { x: number; y: number } {
   const w = MAP_SIZE.width / nextZoom;
   const h = MAP_SIZE.height / nextZoom;
-  const newCx = ptX - (mx - 0.5) * w;
-  const newCy = ptY - (my - 0.5) * h;
-  return { x: newCx - MAP_SIZE.width / 2, y: newCy - MAP_SIZE.height / 2 };
+  const { evisW, evisH } = effectiveSliceSize(w, h, container);
+  return {
+    x: ptX + (0.5 - mx) * evisW - MAP_SIZE.width / 2,
+    y: ptY + (0.5 - my) * evisH - MAP_SIZE.height / 2,
+  };
 }
 
 function touchDistance(t1: Touch, t2: Touch): number {
@@ -145,7 +153,7 @@ export function useZoomPan(): ZoomPanState {
       const z0 = zoomRef.current;
       if (nextZoom === z0) return;
       const { mx, my, ptX, ptY } = pointInMapCoords(el, clientX, clientY, z0, panRef.current);
-      const nextPan = panForZoomAround(ptX, ptY, mx, my, nextZoom);
+      const nextPan = panForZoomAround(ptX, ptY, mx, my, nextZoom, el.getBoundingClientRect());
       setZoomPan(nextZoom, nextPan);
     };
 
@@ -169,9 +177,13 @@ export function useZoomPan(): ZoomPanState {
         pinchRef.current = null;
         setDragging(true);
       } else if (e.touches.length === 2) {
+        const mid = touchMidpoint(e.touches[0], e.touches[1]);
+        const { ptX, ptY } = pointInMapCoords(el, mid.x, mid.y, zoomRef.current, panRef.current);
         pinchRef.current = {
           startDist: touchDistance(e.touches[0], e.touches[1]),
           startZoom: zoomRef.current,
+          anchorPtX: ptX,
+          anchorPtY: ptY,
         };
         dragRef.current = null;
         setDragging(false);
@@ -185,7 +197,18 @@ export function useZoomPan(): ZoomPanState {
         const ratio = touchDistance(e.touches[0], e.touches[1]) / pinchRef.current.startDist;
         const nextZoom = clampZoom(pinchRef.current.startZoom * ratio);
         const mid = touchMidpoint(e.touches[0], e.touches[1]);
-        zoomAround(mid.x, mid.y, nextZoom);
+        const rect = el.getBoundingClientRect();
+        const mx = (mid.x - rect.left) / rect.width;
+        const my = (mid.y - rect.top) / rect.height;
+        const nextPan = panForZoomAround(
+          pinchRef.current.anchorPtX,
+          pinchRef.current.anchorPtY,
+          mx,
+          my,
+          nextZoom,
+          rect,
+        );
+        setZoomPan(nextZoom, nextPan);
         return;
       }
 

@@ -16,7 +16,7 @@ export function MapSvg({ zoomPan, children }: MapSvgProps) {
       viewBox={`${initialViewBox.x} ${initialViewBox.y} ${initialViewBox.w} ${initialViewBox.h}`}
       preserveAspectRatio="xMidYMid slice"
       className="atlas-svg block h-full w-full"
-      style={{ cursor: dragging ? "grabbing" : "grab" }}
+      style={{ cursor: dragging ? "grabbing" : "grab", willChange: "transform", contain: "paint" }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}

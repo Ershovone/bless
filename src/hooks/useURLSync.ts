@@ -1,22 +1,13 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useAtlasStore } from "./useAtlasStore";
-import { BASE_PATH } from "@/lib/seo/paths";
 
 const PARAM_CITY = "city";
 const PARAM_YEAR = "year";
 
-function stripBasePath(pathname: string): string {
-  if (BASE_PATH && pathname.startsWith(BASE_PATH)) {
-    return pathname.slice(BASE_PATH.length) || "/";
-  }
-  return pathname || "/";
-}
-
 export function useURLSync(): void {
-  const router = useRouter();
   const params = useSearchParams();
   const hydratedRef = useRef(false);
 
@@ -38,7 +29,8 @@ export function useURLSync(): void {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Write store changes back to URL — but only when something actually differs.
+  // Write store changes back to URL via history.replaceState — bypasses Next's
+  // router so it never tries to scroll, refetch, or remount route segments.
   useEffect(() => {
     if (!hydratedRef.current) return;
     const next = new URLSearchParams();
@@ -47,8 +39,9 @@ export function useURLSync(): void {
     const target = next.toString();
     if (target === params.toString()) return;
 
-    const path = stripBasePath(window.location.pathname);
-    router.replace(target ? `${path}?${target}` : path, { scroll: false });
+    const path = window.location.pathname;
+    const url = target ? `${path}?${target}` : path;
+    window.history.replaceState(window.history.state, "", url);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCity, scrubYear]);
 }

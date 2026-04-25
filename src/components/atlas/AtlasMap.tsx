@@ -81,7 +81,7 @@ export function AtlasMap() {
       )}
 
       <ZoomControls
-        zoom={zoomPan.zoom}
+        zoom={zoomPan.zoomDisplay}
         onZoomIn={zoomPan.zoomIn}
         onZoomOut={zoomPan.zoomOut}
         onReset={zoomPan.reset}

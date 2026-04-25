@@ -9,14 +9,14 @@ type MapSvgProps = {
 };
 
 export function MapSvg({ zoomPan, children }: MapSvgProps) {
-  const { viewBox, svgRef, dragging, onMouseDown, onMouseMove, onMouseUp, onMouseLeave } = zoomPan;
+  const { initialViewBox, svgRef, dragging, onMouseDown, onMouseMove, onMouseUp, onMouseLeave } = zoomPan;
   return (
     <svg
       ref={svgRef}
-      viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
+      viewBox={`${initialViewBox.x} ${initialViewBox.y} ${initialViewBox.w} ${initialViewBox.h}`}
       preserveAspectRatio="xMidYMid slice"
-      className="block h-full w-full"
-      style={{ cursor: dragging ? "grabbing" : "grab", touchAction: "none" }}
+      className="atlas-svg block h-full w-full"
+      style={{ cursor: dragging ? "grabbing" : "grab" }}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
       onMouseUp={onMouseUp}

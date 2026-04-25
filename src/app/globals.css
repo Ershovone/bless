@@ -45,6 +45,13 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+/* touch-action does not inherit in SVG — propagate explicitly so taps on cities
+   and labels don't fall back to the browser's default scroll/zoom gestures. */
+.atlas-svg,
+.atlas-svg * {
+  touch-action: none;
+}
+
 /* Hide the range thumb but keep the slider draggable. */
 .invisible-slider {
   -webkit-appearance: none;

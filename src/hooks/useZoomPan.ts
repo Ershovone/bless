@@ -1,10 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MAP_SIZE, ZOOM } from "@/constants/map";
 
 type DragState = { sx: number; sy: number; px: number; py: number; z: number };
-type PinchState = { startDist: number; startZoom: number; cx: number; cy: number };
+type PinchState = { startDist: number; startZoom: number };
 
 const TAP_MAX_MOVE_PX = 8;
 
@@ -12,10 +12,11 @@ function clampZoom(z: number): number {
   return Math.max(ZOOM.min, Math.min(ZOOM.max, z));
 }
 
+type ViewBox = { x: number; y: number; w: number; h: number };
+
 export type ZoomPanState = {
-  zoom: number;
-  pan: { x: number; y: number };
-  viewBox: { x: number; y: number; w: number; h: number };
+  zoomDisplay: number;
+  initialViewBox: ViewBox;
   zoomIn: () => void;
   zoomOut: () => void;
   reset: () => void;
@@ -27,7 +28,7 @@ export type ZoomPanState = {
   svgRef: React.RefObject<SVGSVGElement | null>;
 };
 
-function viewBoxFor(zoom: number, pan: { x: number; y: number }) {
+function viewBoxFor(zoom: number, pan: { x: number; y: number }): ViewBox {
   const { width, height } = MAP_SIZE;
   const w = width / zoom;
   const h = height / zoom;
@@ -38,24 +39,35 @@ function viewBoxFor(zoom: number, pan: { x: number; y: number }) {
   return { x, y, w, h };
 }
 
-function zoomAroundPoint(
+function applyViewBox(el: SVGSVGElement, vb: ViewBox): void {
+  el.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+}
+
+function pointInMapCoords(
   el: Element,
   clientX: number,
   clientY: number,
-  nextZoom: number,
-  prevZoom: number,
-  prevPan: { x: number; y: number },
-): { x: number; y: number } {
+  zoom: number,
+  pan: { x: number; y: number },
+): { mx: number; my: number; ptX: number; ptY: number } {
   const rect = el.getBoundingClientRect();
   const mx = (clientX - rect.left) / rect.width;
   const my = (clientY - rect.top) / rect.height;
-  const vb0 = viewBoxFor(prevZoom, prevPan);
-  const ptX = vb0.x + mx * vb0.w;
-  const ptY = vb0.y + my * vb0.h;
-  const w1 = MAP_SIZE.width / nextZoom;
-  const h1 = MAP_SIZE.height / nextZoom;
-  const newCx = ptX - (mx - 0.5) * w1;
-  const newCy = ptY - (my - 0.5) * h1;
+  const vb = viewBoxFor(zoom, pan);
+  return { mx, my, ptX: vb.x + mx * vb.w, ptY: vb.y + my * vb.h };
+}
+
+function panForZoomAround(
+  ptX: number,
+  ptY: number,
+  mx: number,
+  my: number,
+  nextZoom: number,
+): { x: number; y: number } {
+  const w = MAP_SIZE.width / nextZoom;
+  const h = MAP_SIZE.height / nextZoom;
+  const newCx = ptX - (mx - 0.5) * w;
+  const newCy = ptY - (my - 0.5) * h;
   return { x: newCx - MAP_SIZE.width / 2, y: newCy - MAP_SIZE.height / 2 };
 }
 
@@ -68,39 +80,58 @@ function touchMidpoint(t1: Touch, t2: Touch): { x: number; y: number } {
 }
 
 export function useZoomPan(): ZoomPanState {
-  const [zoom, setZoom] = useState<number>(ZOOM.min);
-  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [zoomDisplay, setZoomDisplay] = useState<number>(ZOOM.min);
   const [dragging, setDragging] = useState(false);
 
-  const zoomRef = useRef<number>(zoom);
-  const panRef = useRef<{ x: number; y: number }>(pan);
+  const zoomRef = useRef<number>(ZOOM.min);
+  const panRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const dragRef = useRef<DragState | null>(null);
   const pinchRef = useRef<PinchState | null>(null);
   const touchMovedRef = useRef<boolean>(false);
+  const rafRef = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  useEffect(() => { zoomRef.current = zoom; }, [zoom]);
-  useEffect(() => { panRef.current = pan; }, [pan]);
+  const flushView = useCallback((): void => {
+    const el = svgRef.current;
+    if (!el) return;
+    applyViewBox(el, viewBoxFor(zoomRef.current, panRef.current));
+  }, []);
 
-  // Non-passive wheel + touch listeners (React synthetic events are passive).
+  const scheduleDisplaySync = useCallback((): void => {
+    if (rafRef.current !== null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      setZoomDisplay(zoomRef.current);
+    });
+  }, []);
+
+  const setZoomPan = useCallback(
+    (zoom: number, pan: { x: number; y: number }): void => {
+      zoomRef.current = zoom;
+      panRef.current = pan;
+      flushView();
+      scheduleDisplaySync();
+    },
+    [flushView, scheduleDisplaySync],
+  );
+
+  // Wheel + touch listeners (non-passive so we can call preventDefault).
   useEffect(() => {
     const el = svgRef.current;
     if (!el) return;
 
-    const applyZoomAround = (clientX: number, clientY: number, nextZoom: number): void => {
+    const zoomAround = (clientX: number, clientY: number, nextZoom: number): void => {
       const z0 = zoomRef.current;
       if (nextZoom === z0) return;
-      const nextPan = zoomAroundPoint(el, clientX, clientY, nextZoom, z0, panRef.current);
-      zoomRef.current = nextZoom;
-      panRef.current = nextPan;
-      setZoom(nextZoom);
-      setPan(nextPan);
+      const { mx, my, ptX, ptY } = pointInMapCoords(el, clientX, clientY, z0, panRef.current);
+      const nextPan = panForZoomAround(ptX, ptY, mx, my, nextZoom);
+      setZoomPan(nextZoom, nextPan);
     };
 
     const onWheel = (e: WheelEvent): void => {
       e.preventDefault();
       const delta = -Math.sign(e.deltaY) * ZOOM.wheelDelta;
-      applyZoomAround(e.clientX, e.clientY, clampZoom(zoomRef.current * (1 + delta)));
+      zoomAround(e.clientX, e.clientY, clampZoom(zoomRef.current * (1 + delta)));
     };
 
     const onTouchStart = (e: TouchEvent): void => {
@@ -117,13 +148,9 @@ export function useZoomPan(): ZoomPanState {
         pinchRef.current = null;
         setDragging(true);
       } else if (e.touches.length === 2) {
-        const [a, b] = [e.touches[0], e.touches[1]];
-        const mid = touchMidpoint(a, b);
         pinchRef.current = {
-          startDist: touchDistance(a, b),
+          startDist: touchDistance(e.touches[0], e.touches[1]),
           startZoom: zoomRef.current,
-          cx: mid.x,
-          cy: mid.y,
         };
         dragRef.current = null;
         setDragging(false);
@@ -134,17 +161,10 @@ export function useZoomPan(): ZoomPanState {
       if (e.touches.length === 2 && pinchRef.current) {
         e.preventDefault();
         touchMovedRef.current = true;
-        const [a, b] = [e.touches[0], e.touches[1]];
-        const dist = touchDistance(a, b);
-        const ratio = dist / pinchRef.current.startDist;
+        const ratio = touchDistance(e.touches[0], e.touches[1]) / pinchRef.current.startDist;
         const nextZoom = clampZoom(pinchRef.current.startZoom * ratio);
-        const mid = touchMidpoint(a, b);
-        applyZoomAround(mid.x, mid.y, nextZoom);
-        pinchRef.current = {
-          ...pinchRef.current,
-          cx: mid.x,
-          cy: mid.y,
-        };
+        const mid = touchMidpoint(e.touches[0], e.touches[1]);
+        zoomAround(mid.x, mid.y, nextZoom);
         return;
       }
 
@@ -156,10 +176,8 @@ export function useZoomPan(): ZoomPanState {
       const dy = t.clientY - d.sy;
       if (Math.abs(dx) + Math.abs(dy) > TAP_MAX_MOVE_PX) touchMovedRef.current = true;
       const rect = el.getBoundingClientRect();
-      const scale = (MAP_SIZE.width / d.z) / rect.width;
-      const nextPan = { x: d.px - dx * scale, y: d.py - dy * scale };
-      panRef.current = nextPan;
-      setPan(nextPan);
+      const scale = MAP_SIZE.width / d.z / rect.width;
+      setZoomPan(zoomRef.current, { x: d.px - dx * scale, y: d.py - dy * scale });
     };
 
     const onTouchEnd = (e: TouchEvent): void => {
@@ -186,7 +204,7 @@ export function useZoomPan(): ZoomPanState {
       setDragging(false);
     };
 
-    // Suppress synthetic clicks after a pan gesture so tapping a city still works but dragging doesn't open it.
+    // Suppress synthetic clicks after a pan/pinch so dragging doesn't open a city panel.
     const onClickCapture = (e: MouseEvent): void => {
       if (touchMovedRef.current) {
         e.stopPropagation();
@@ -209,15 +227,21 @@ export function useZoomPan(): ZoomPanState {
       el.removeEventListener("touchend", onTouchEnd);
       el.removeEventListener("touchcancel", onTouchCancel);
       el.removeEventListener("click", onClickCapture, true);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [setZoomPan]);
 
-  const zoomIn = useCallback(() => setZoom((z) => clampZoom(z * ZOOM.step)), []);
-  const zoomOut = useCallback(() => setZoom((z) => clampZoom(z / ZOOM.step)), []);
+  const zoomIn = useCallback(() => {
+    setZoomPan(clampZoom(zoomRef.current * ZOOM.step), panRef.current);
+  }, [setZoomPan]);
+
+  const zoomOut = useCallback(() => {
+    setZoomPan(clampZoom(zoomRef.current / ZOOM.step), panRef.current);
+  }, [setZoomPan]);
+
   const reset = useCallback(() => {
-    setZoom(ZOOM.min);
-    setPan({ x: 0, y: 0 });
-  }, []);
+    setZoomPan(ZOOM.min, { x: 0, y: 0 });
+  }, [setZoomPan]);
 
   const onMouseDown = useCallback<React.MouseEventHandler<SVGSVGElement>>((e) => {
     if (e.button !== 0) return;
@@ -231,26 +255,30 @@ export function useZoomPan(): ZoomPanState {
     setDragging(true);
   }, []);
 
-  const onMouseMove = useCallback<React.MouseEventHandler<SVGSVGElement>>((e) => {
-    const d = dragRef.current;
-    if (!d) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const scale = (MAP_SIZE.width / d.z) / rect.width;
-    setPan({
-      x: d.px - (e.clientX - d.sx) * scale,
-      y: d.py - (e.clientY - d.sy) * scale,
-    });
-  }, []);
+  const onMouseMove = useCallback<React.MouseEventHandler<SVGSVGElement>>(
+    (e) => {
+      const d = dragRef.current;
+      if (!d) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const scale = MAP_SIZE.width / d.z / rect.width;
+      setZoomPan(zoomRef.current, {
+        x: d.px - (e.clientX - d.sx) * scale,
+        y: d.py - (e.clientY - d.sy) * scale,
+      });
+    },
+    [setZoomPan],
+  );
 
   const endDrag = useCallback(() => {
     dragRef.current = null;
     setDragging(false);
   }, []);
 
+  const initialViewBox = useMemo(() => viewBoxFor(ZOOM.min, { x: 0, y: 0 }), []);
+
   return {
-    zoom,
-    pan,
-    viewBox: viewBoxFor(zoom, pan),
+    zoomDisplay,
+    initialViewBox,
     zoomIn,
     zoomOut,
     reset,

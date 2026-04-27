@@ -5,7 +5,32 @@
       "Bash(curl -s -o /dev/null -w \"/: %{http_code}\\\\n/paul/: \" http://localhost:3000/)",
       "Bash(curl -s -o /dev/null -w \"/paul/: %{http_code}\\\\n\" http://localhost:3000/paul/)",
       "Bash(curl -s -o /dev/null -w \"/exodus/: %{http_code}\\\\n/paul/: %{http_code}\\\\n/: %{http_code}\\\\n\" http://localhost:3000/exodus/ http://localhost:3000/paul/ http://localhost:3000/)",
-      "Bash(curl -s -o /dev/null -w \"/exodus/: %{http_code}\\\\n\" http://localhost:3000/exodus/)"
+      "Bash(curl -s -o /dev/null -w \"/exodus/: %{http_code}\\\\n\" http://localhost:3000/exodus/)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(chmod +x /Users/ershov/Documents/development/projects/bless/.claude/scripts/regenerate-board.sh)",
+      "Bash(bash /Users/ershov/Documents/development/projects/bless/.claude/scripts/regenerate-board.sh)",
+      "Bash(grep -E '/\\\\.claude/tasks/[^/]+\\\\.md$')",
+      "Bash(grep -vE '/\\(BOARD|README\\)\\\\.md$')",
+      "Bash(bash .claude/scripts/regenerate-board.sh)",
+      "Bash(python3 -c \"import sys, json; json.load\\(sys.stdin\\); print\\('OK'\\)\")"
+    ],
+    "additionalDirectories": [
+      "/Users/ershov/Documents/development/projects/bless/.claude",
+      "/Users/ershov/Documents/development/projects/bless/.claude/tasks"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/scripts/regenerate-board.sh\" 2>/dev/null || true"
+          }
+        ]
+      }
     ]
   }
 }

@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import type { GeoProjection } from "d3-geo";
 import { EXODUS_STATIONS, EXODUS_STATION_ORDER } from "@/data/exodus/stations";
-import type { ExodusStationId } from "@/types/exodus";
+import type { ExodusStationConfidence, ExodusStationId } from "@/types/exodus";
 import { FONT_FAMILIES } from "@/constants/design";
 import { project } from "@/lib/geo/projection";
 import { useExodusStore } from "@/hooks/useExodusStore";
@@ -14,9 +14,9 @@ type ProjectedStation = {
   en: string;
   x: number;
   y: number;
-  numero: number;
   isStart: boolean;
   isEnd: boolean;
+  confidence: ExodusStationConfidence;
 };
 
 type ExodusStationsLayerProps = {
@@ -43,9 +43,9 @@ export function ExodusStationsLayer({ proj, activeStations }: ExodusStationsLaye
           en: s.en,
           x: p.x,
           y: p.y,
-          numero: i + 1,
           isStart: i === 0,
           isEnd: i === EXODUS_STATION_ORDER.length - 1,
+          confidence: s.confidence ?? "approximate",
         };
       }),
     [proj],
@@ -57,6 +57,8 @@ export function ExodusStationsLayer({ proj, activeStations }: ExodusStationsLaye
         const inActive = activeStations.has(c.id);
         const isHovered = hover === c.id;
         const isEndpoint = c.isStart || c.isEnd;
+        const isKnown = c.confidence === "known";
+        const showLabel = isKnown || (inActive && (isEndpoint || isHovered));
 
         return (
           <g
@@ -72,7 +74,7 @@ export function ExodusStationsLayer({ proj, activeStations }: ExodusStationsLaye
           >
             <circle r="14" fill="transparent" />
 
-            {inActive && isEndpoint ? (
+            {inActive && isEndpoint && isKnown ? (
               <g>
                 <circle r="7" fill="var(--color-rust)" />
                 <circle r="11" fill="none" stroke="var(--color-rust)" strokeWidth="1" />
@@ -82,23 +84,36 @@ export function ExodusStationsLayer({ proj, activeStations }: ExodusStationsLaye
                   strokeWidth="1"
                 />
               </g>
-            ) : inActive ? (
+            ) : inActive && isKnown ? (
               <>
-                <circle r={isHovered ? 5 : 3.5} fill="var(--color-ink)" />
+                <circle r={isHovered ? 5 : 3.8} fill="var(--color-ink)" />
                 <circle
-                  r={isHovered ? 8 : 5.5}
+                  r={isHovered ? 8 : 6}
                   fill="none"
                   stroke="var(--color-rust)"
                   strokeWidth="0.8"
                   opacity="0.6"
                 />
               </>
-            ) : (
+            ) : inActive && !isKnown ? (
+              <>
+                <circle r={isHovered ? 3.5 : 2.2} fill="var(--color-rust)" opacity="0.85" />
+                {isHovered && (
+                  <circle
+                    r="6"
+                    fill="none"
+                    stroke="var(--color-rust)"
+                    strokeWidth="0.6"
+                    opacity="0.5"
+                  />
+                )}
+              </>
+            ) : isKnown ? (
               <>
                 <circle
-                  r={isHovered ? 4 : 2.5}
+                  r={isHovered ? 4 : 2.8}
                   fill="var(--color-sepia-light)"
-                  opacity={isHovered ? 0.9 : 0.55}
+                  opacity={isHovered ? 0.9 : 0.65}
                 />
                 {isHovered && (
                   <circle
@@ -110,27 +125,46 @@ export function ExodusStationsLayer({ proj, activeStations }: ExodusStationsLaye
                   />
                 )}
               </>
+            ) : (
+              <>
+                <circle
+                  r={isHovered ? 2.8 : 1.4}
+                  fill="var(--color-sepia-light)"
+                  opacity={isHovered ? 0.85 : 0.45}
+                />
+                {isHovered && (
+                  <circle
+                    r="5"
+                    fill="none"
+                    stroke="var(--color-sepia-light)"
+                    strokeWidth="0.5"
+                    opacity="0.5"
+                  />
+                )}
+              </>
             )}
 
-            <text
-              y={inActive ? LABEL_OFFSET_Y_ON : LABEL_OFFSET_Y_OFF}
-              textAnchor="middle"
-              fontSize={inActive ? (isEndpoint ? 14 : 11) : 9}
-              fontFamily={FONT_FAMILIES.serif}
-              fontStyle="italic"
-              fontWeight={isEndpoint ? 500 : 400}
-              fill={inActive ? "var(--color-ink)" : "var(--color-sepia)"}
-              opacity={inActive ? 1 : 0.55}
-              style={{
-                pointerEvents: "none",
-                paintOrder: "stroke",
-                stroke: "var(--color-parchment)",
-                strokeWidth: 3.5,
-                strokeLinejoin: "round",
-              }}
-            >
-              {c.ru}
-            </text>
+            {showLabel && (
+              <text
+                y={inActive ? LABEL_OFFSET_Y_ON : LABEL_OFFSET_Y_OFF}
+                textAnchor="middle"
+                fontSize={inActive ? (isEndpoint ? 14 : 11) : 9}
+                fontFamily={FONT_FAMILIES.serif}
+                fontStyle="italic"
+                fontWeight={isEndpoint ? 500 : 400}
+                fill={inActive ? "var(--color-ink)" : "var(--color-sepia)"}
+                opacity={inActive ? 1 : 0.55}
+                style={{
+                  pointerEvents: "none",
+                  paintOrder: "stroke",
+                  stroke: "var(--color-parchment)",
+                  strokeWidth: 3.5,
+                  strokeLinejoin: "round",
+                }}
+              >
+                {c.ru}
+              </text>
+            )}
           </g>
         );
       })}

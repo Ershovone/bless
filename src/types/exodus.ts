@@ -5,6 +5,8 @@ export type ExodusStationEvent = {
   ru: string;
 };
 
+export type ExodusStationConfidence = "known" | "approximate";
+
 export type ExodusStation = {
   ru: string;
   en: string;
@@ -15,6 +17,7 @@ export type ExodusStation = {
   modern?: string;
   significance?: string;
   events?: ExodusStationEvent[];
+  confidence?: ExodusStationConfidence;
 };
 
 export type ExodusPhaseId = "escape" | "to_sinai" | "law" | "wandering" | "to_promised";

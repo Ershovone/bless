@@ -13,13 +13,12 @@ import { ModernBordersLayer } from "@/components/atlas/layers/ModernBordersLayer
 import { ScaleBar } from "@/components/atlas/layers/ScaleBar";
 import { SeaBackground } from "@/components/atlas/layers/SeaBackground";
 import { EXODUS_MAP_SIZE, EXODUS_BOW_FACTOR } from "@/data/exodus/mapConstants";
-import { EXODUS_PHASES, EXODUS_FULL_ROUTE } from "@/data/exodus/phases";
-import { EXODUS_STATIONS, EXODUS_STATION_ORDER } from "@/data/exodus/stations";
+import { EXODUS_PHASES } from "@/data/exodus/phases";
+import { EXODUS_STATIONS } from "@/data/exodus/stations";
 import { useExodusProjection } from "@/hooks/useExodusProjection";
 import { useExodusStore } from "@/hooks/useExodusStore";
 import { useWorldTopology } from "@/hooks/useWorldTopology";
 import { useZoomPan } from "@/hooks/useZoomPan";
-import { ExodusActiveRoute } from "./layers/ExodusActiveRoute";
 import { ExodusGraticule } from "./layers/ExodusGraticule";
 import { ExodusRegionLabels } from "./layers/ExodusRegionLabels";
 import { ExodusRivers } from "./layers/ExodusRivers";
@@ -35,7 +34,12 @@ function FullscreenWrapper({ children }: { children: ReactNode }) {
 }
 
 const STATIONS_AS_CITIES = EXODUS_STATIONS as unknown as Record<CityId, City>;
-const FULL_ROUTE_IDS = EXODUS_FULL_ROUTE as CityId[];
+
+type PhasePath = {
+  phaseIdx: number;
+  d: string;
+  color: string;
+};
 
 export function ExodusAtlasMap({
   variant = "framed",
@@ -50,33 +54,26 @@ export function ExodusAtlasMap({
   const { data: world } = useWorldTopology(proj, pathGen);
   const zoomPan = useZoomPan(EXODUS_MAP_SIZE, setZoomDisplay);
 
-  const phase = EXODUS_PHASES[activePhaseIdx];
-
-  const fullRouteD = useMemo(
-    () => buildRoutePath(FULL_ROUTE_IDS, STATIONS_AS_CITIES, proj, EXODUS_BOW_FACTOR),
-    [proj],
-  );
-
-  const phaseRouteD = useMemo(
-    () =>
-      buildRoutePath(
-        phase.stations as CityId[],
-        STATIONS_AS_CITIES,
-        proj,
-        EXODUS_BOW_FACTOR,
-      ),
-    [phase, proj],
-  );
+  const phasePaths = useMemo<PhasePath[]>(() => {
+    return EXODUS_PHASES.map((phase, pi) => {
+      const prevPhase = pi > 0 ? EXODUS_PHASES[pi - 1] : null;
+      const leadIn = prevPhase
+        ? [prevPhase.stations[prevPhase.stations.length - 1]]
+        : [];
+      const ids = [...leadIn, ...phase.stations] as CityId[];
+      if (ids.length < 2) return { phaseIdx: pi, d: "", color: phase.color };
+      const d = buildRoutePath(ids, STATIONS_AS_CITIES, proj, EXODUS_BOW_FACTOR);
+      return { phaseIdx: pi, d, color: phase.color };
+    });
+  }, [proj]);
 
   const activeStations = useMemo(
-    () => new Set(phase.stations),
-    [phase],
+    () => new Set(EXODUS_PHASES[activePhaseIdx].stations),
+    [activePhaseIdx],
   );
 
   const Wrapper = variant === "fullscreen" ? FullscreenWrapper : AtlasFrame;
   const zoomPosition = variant === "fullscreen" ? "bottom-right" : "bottom-left";
-
-  void EXODUS_STATION_ORDER;
 
   return (
     <Wrapper>
@@ -99,18 +96,45 @@ export function ExodusAtlasMap({
         />
         <PeoplesLayer proj={proj} />
 
-        {/* Faint full route always visible — context */}
-        <path
-          d={fullRouteD}
-          fill="none"
-          stroke="var(--color-sepia-light)"
-          strokeWidth="1"
-          strokeDasharray="2 4"
-          opacity="0.5"
-        />
+        {/* Inactive phase paths — faint sepia, dashed */}
+        {phasePaths.map(({ phaseIdx, d }) =>
+          d && phaseIdx !== activePhaseIdx ? (
+            <path
+              key={`inactive-${phaseIdx}`}
+              d={d}
+              fill="none"
+              stroke="var(--color-sepia-light)"
+              strokeWidth="1"
+              strokeDasharray="2 4"
+              opacity="0.45"
+              strokeLinecap="round"
+            />
+          ) : null,
+        )}
 
-        {/* Active phase route */}
-        <ExodusActiveRoute d={phaseRouteD} color={phase.color} />
+        {/* Active phase path — colored on top */}
+        {phasePaths.map(({ phaseIdx, d, color }) =>
+          d && phaseIdx === activePhaseIdx ? (
+            <g key={`active-${phaseIdx}`}>
+              <path
+                d={d}
+                fill="none"
+                stroke="var(--color-ink)"
+                strokeWidth="3"
+                strokeLinecap="round"
+                opacity="0.25"
+              />
+              <path
+                d={d}
+                fill="none"
+                stroke={color}
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeDasharray="6 3"
+              />
+            </g>
+          ) : null,
+        )}
 
         <ExodusStationsLayer proj={proj} activeStations={activeStations} />
       </MapSvg>

@@ -69,6 +69,13 @@ export function StationDetailPanel() {
           <p className="mb-5 text-[15px] leading-[1.6]">{station.significance}</p>
         )}
 
+        {!station.significance && (!station.events || station.events.length === 0) && (
+          <p className="mb-5 text-[14px] italic leading-[1.55] text-(--color-sepia)">
+            Других упоминаний в Писании нет — название встречается только в перечне станций
+            Исхода. Точное место по сей день остаётся неизвестным.
+          </p>
+        )}
+
         {station.events && station.events.length > 0 && (
           <div className="mt-6 border-t border-(--color-sepia-light)/60 pt-5">
             <div className="mb-3 text-[11px] uppercase tracking-[0.25em] text-(--color-rust)">

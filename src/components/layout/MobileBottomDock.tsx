@@ -1,14 +1,17 @@
 "use client";
 
-import {
-  MOBILE_DOCK_HEIGHT,
-  MOBILE_SHEET_TABS,
-  type MobileSheetTabId,
-} from "@/constants/mobile";
+import { MOBILE_DOCK_HEIGHT, MOBILE_SHEET_TABS } from "@/constants/mobile";
 
-type MobileBottomDockProps = {
-  activeTab: MobileSheetTabId | null;
-  onTabClick: (tab: MobileSheetTabId) => void;
+export type MobileBottomDockTab<TId extends string = string> = {
+  id: TId;
+  ru: string;
+  en: string;
+};
+
+type MobileBottomDockProps<TId extends string> = {
+  activeTab: TId | null;
+  onTabClick: (tab: TId) => void;
+  tabs?: ReadonlyArray<MobileBottomDockTab<TId>>;
 };
 
 const TAB_BUTTON_BASE =
@@ -17,7 +20,11 @@ const TAB_BUTTON_ACTIVE =
   "border-(--color-ink) bg-(--color-parchment-light) text-(--color-ink)";
 const TAB_BUTTON_INACTIVE = "text-(--color-sepia) hover:bg-(--color-parchment-light)/40";
 
-export function MobileBottomDock({ activeTab, onTabClick }: MobileBottomDockProps) {
+export function MobileBottomDock<TId extends string>({
+  activeTab,
+  onTabClick,
+  tabs = MOBILE_SHEET_TABS as unknown as ReadonlyArray<MobileBottomDockTab<TId>>,
+}: MobileBottomDockProps<TId>) {
   return (
     <nav
       aria-label="Разделы атласа"
@@ -27,7 +34,7 @@ export function MobileBottomDock({ activeTab, onTabClick }: MobileBottomDockProp
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
-      {MOBILE_SHEET_TABS.map((tab) => {
+      {tabs.map((tab) => {
         const active = activeTab === tab.id;
         return (
           <button

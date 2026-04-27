@@ -13,11 +13,41 @@ type BookSlot = {
 };
 
 const BOOKS: BookSlot[] = [
-  { slug: null,   ru: "Бытие",             en: "Genesis",              ref: "Эдем → Ханаан",               enabled: false },
-  { slug: null,   ru: "Исход",             en: "Exodus",               ref: "Путь Моисея",                 enabled: false },
-  { slug: null,   ru: "Царства",           en: "Kings",                ref: "Царская история",             enabled: false },
-  { slug: null,   ru: "Евангелия",         en: "Gospels",              ref: "Путь Христа",                 enabled: false },
-  { slug: "paul", ru: "Деяния Апостолов",  en: "Acts of the Apostles", ref: "Путешествия Павла · 46–62 A.D.", enabled: true },
+  {
+    slug: null,
+    ru: "Бытие",
+    en: "Genesis",
+    ref: "Эдем → Ханаан",
+    enabled: false,
+  },
+  {
+    slug: "exodus",
+    ru: "Исход",
+    en: "Exodus",
+    ref: "Путь Моисея · ~1446 до Р.Х.",
+    enabled: true,
+  },
+  {
+    slug: null,
+    ru: "Царства",
+    en: "Kings",
+    ref: "Царская история",
+    enabled: false,
+  },
+  {
+    slug: null,
+    ru: "Евангелия",
+    en: "Gospels",
+    ref: "Путь Христа",
+    enabled: false,
+  },
+  {
+    slug: "paul",
+    ru: "Деяния Апостолов",
+    en: "Acts of the Apostles",
+    ref: "Путешествия Павла · 46–62 A.D.",
+    enabled: true,
+  },
 ];
 
 export const metadata: Metadata = buildMetadata({
@@ -39,7 +69,8 @@ export default function HomePage() {
           </em>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg italic leading-relaxed text-(--color-sepia)">
-          Интерактивные карты библейских путешествий на пергаменте — маршруты, спутники, хронология и города.
+          Интерактивные карты библейских путешествий на пергаменте — маршруты,
+          спутники, хронология и города.
         </p>
         <div className="mt-10">
           <Ornament />
@@ -50,7 +81,9 @@ export default function HomePage() {
             const card = (
               <div
                 className={`border border-(--color-sepia-light) bg-(--color-parchment-light)/60 p-6 text-left transition-all ${
-                  b.enabled ? "hover:bg-(--color-parchment-light) hover:shadow-lg" : "opacity-50"
+                  b.enabled
+                    ? "hover:bg-(--color-parchment-light) hover:shadow-lg"
+                    : "opacity-50"
                 }`}
               >
                 <div className="font-sans text-[11px] uppercase tracking-[0.25em] text-(--color-rust)">
@@ -59,7 +92,9 @@ export default function HomePage() {
                 <h2 className="mt-2 text-2xl font-medium leading-tight text-(--color-ink)">
                   {b.ru}
                 </h2>
-                <p className="mt-1 text-sm italic text-(--color-sepia)">{b.en}</p>
+                <p className="mt-1 text-sm italic text-(--color-sepia)">
+                  {b.en}
+                </p>
                 <p className="mt-3 text-sm text-(--color-ink-muted)">{b.ref}</p>
               </div>
             );

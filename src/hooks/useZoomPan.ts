@@ -14,6 +14,12 @@ type PinchState = {
 
 const TAP_MAX_MOVE_PX = 8;
 
+type MapDims = { width: number; height: number };
+
+const defaultOnZoomChange = (z: number): void => {
+  useAtlasStore.getState().setZoomDisplay(z);
+};
+
 function clampZoom(z: number): number {
   return Math.max(ZOOM.min, Math.min(ZOOM.max, z));
 }
@@ -47,8 +53,9 @@ function viewBoxFor(
   zoom: number,
   pan: { x: number; y: number },
   container: { width: number; height: number } | null,
+  mapSize: MapDims,
 ): ViewBox {
-  const { width, height } = MAP_SIZE;
+  const { width, height } = mapSize;
   const w = width / zoom;
   const h = height / zoom;
   const cx = width / 2 + pan.x;
@@ -73,11 +80,12 @@ function pointInMapCoords(
   clientY: number,
   zoom: number,
   pan: { x: number; y: number },
+  mapSize: MapDims,
 ): { mx: number; my: number; ptX: number; ptY: number } {
   const rect = el.getBoundingClientRect();
   const mx = (clientX - rect.left) / rect.width;
   const my = (clientY - rect.top) / rect.height;
-  const vb = viewBoxFor(zoom, pan, rect);
+  const vb = viewBoxFor(zoom, pan, rect, mapSize);
   const { evisW, evisH } = effectiveSliceSize(vb.w, vb.h, rect);
   const visX = vb.x + (vb.w - evisW) / 2;
   const visY = vb.y + (vb.h - evisH) / 2;
@@ -91,13 +99,14 @@ function panForZoomAround(
   my: number,
   nextZoom: number,
   container: { width: number; height: number },
+  mapSize: MapDims,
 ): { x: number; y: number } {
-  const w = MAP_SIZE.width / nextZoom;
-  const h = MAP_SIZE.height / nextZoom;
+  const w = mapSize.width / nextZoom;
+  const h = mapSize.height / nextZoom;
   const { evisW, evisH } = effectiveSliceSize(w, h, container);
   return {
-    x: ptX + (0.5 - mx) * evisW - MAP_SIZE.width / 2,
-    y: ptY + (0.5 - my) * evisH - MAP_SIZE.height / 2,
+    x: ptX + (0.5 - mx) * evisW - mapSize.width / 2,
+    y: ptY + (0.5 - my) * evisH - mapSize.height / 2,
   };
 }
 
@@ -109,7 +118,10 @@ function touchMidpoint(t1: Touch, t2: Touch): { x: number; y: number } {
   return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 };
 }
 
-export function useZoomPan(): ZoomPanState {
+export function useZoomPan(
+  mapSize: MapDims = MAP_SIZE,
+  onZoomChange: (z: number) => void = defaultOnZoomChange,
+): ZoomPanState {
   const [dragging, setDragging] = useState(false);
 
   const zoomRef = useRef<number>(ZOOM.min);
@@ -119,18 +131,27 @@ export function useZoomPan(): ZoomPanState {
   const touchMovedRef = useRef<boolean>(false);
   const rafRef = useRef<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const mapSizeRef = useRef<MapDims>(mapSize);
+  const onZoomChangeRef = useRef<(z: number) => void>(onZoomChange);
+  useEffect(() => {
+    mapSizeRef.current = mapSize;
+    onZoomChangeRef.current = onZoomChange;
+  }, [mapSize, onZoomChange]);
 
   const flushView = useCallback((): void => {
     const el = svgRef.current;
     if (!el) return;
-    applyViewBox(el, viewBoxFor(zoomRef.current, panRef.current, el.getBoundingClientRect()));
+    applyViewBox(
+      el,
+      viewBoxFor(zoomRef.current, panRef.current, el.getBoundingClientRect(), mapSizeRef.current),
+    );
   }, []);
 
   const scheduleDisplaySync = useCallback((): void => {
     if (rafRef.current !== null) return;
     rafRef.current = requestAnimationFrame(() => {
       rafRef.current = null;
-      useAtlasStore.getState().setZoomDisplay(zoomRef.current);
+      onZoomChangeRef.current(zoomRef.current);
     });
   }, []);
 
@@ -152,8 +173,9 @@ export function useZoomPan(): ZoomPanState {
     const zoomAround = (clientX: number, clientY: number, nextZoom: number): void => {
       const z0 = zoomRef.current;
       if (nextZoom === z0) return;
-      const { mx, my, ptX, ptY } = pointInMapCoords(el, clientX, clientY, z0, panRef.current);
-      const nextPan = panForZoomAround(ptX, ptY, mx, my, nextZoom, el.getBoundingClientRect());
+      const ms = mapSizeRef.current;
+      const { mx, my, ptX, ptY } = pointInMapCoords(el, clientX, clientY, z0, panRef.current, ms);
+      const nextPan = panForZoomAround(ptX, ptY, mx, my, nextZoom, el.getBoundingClientRect(), ms);
       setZoomPan(nextZoom, nextPan);
     };
 
@@ -178,7 +200,14 @@ export function useZoomPan(): ZoomPanState {
         setDragging(true);
       } else if (e.touches.length === 2) {
         const mid = touchMidpoint(e.touches[0], e.touches[1]);
-        const { ptX, ptY } = pointInMapCoords(el, mid.x, mid.y, zoomRef.current, panRef.current);
+        const { ptX, ptY } = pointInMapCoords(
+          el,
+          mid.x,
+          mid.y,
+          zoomRef.current,
+          panRef.current,
+          mapSizeRef.current,
+        );
         pinchRef.current = {
           startDist: touchDistance(e.touches[0], e.touches[1]),
           startZoom: zoomRef.current,
@@ -207,6 +236,7 @@ export function useZoomPan(): ZoomPanState {
           my,
           nextZoom,
           rect,
+          mapSizeRef.current,
         );
         setZoomPan(nextZoom, nextPan);
         return;
@@ -220,7 +250,8 @@ export function useZoomPan(): ZoomPanState {
       const dy = t.clientY - d.sy;
       if (Math.abs(dx) + Math.abs(dy) > TAP_MAX_MOVE_PX) touchMovedRef.current = true;
       const rect = el.getBoundingClientRect();
-      const sliceScale = Math.max(rect.width / (MAP_SIZE.width / d.z), rect.height / (MAP_SIZE.height / d.z));
+      const ms = mapSizeRef.current;
+      const sliceScale = Math.max(rect.width / (ms.width / d.z), rect.height / (ms.height / d.z));
       setZoomPan(zoomRef.current, { x: d.px - dx / sliceScale, y: d.py - dy / sliceScale });
     };
 
@@ -310,7 +341,8 @@ export function useZoomPan(): ZoomPanState {
       const d = dragRef.current;
       if (!d) return;
       const rect = e.currentTarget.getBoundingClientRect();
-      const sliceScale = Math.max(rect.width / (MAP_SIZE.width / d.z), rect.height / (MAP_SIZE.height / d.z));
+      const ms = mapSizeRef.current;
+      const sliceScale = Math.max(rect.width / (ms.width / d.z), rect.height / (ms.height / d.z));
       setZoomPan(zoomRef.current, {
         x: d.px - (e.clientX - d.sx) / sliceScale,
         y: d.py - (e.clientY - d.sy) / sliceScale,
@@ -324,7 +356,10 @@ export function useZoomPan(): ZoomPanState {
     setDragging(false);
   }, []);
 
-  const initialViewBox = useMemo(() => viewBoxFor(ZOOM.min, { x: 0, y: 0 }, null), []);
+  const initialViewBox = useMemo(
+    () => viewBoxFor(ZOOM.min, { x: 0, y: 0 }, null, mapSize),
+    [mapSize],
+  );
 
   return {
     initialViewBox,

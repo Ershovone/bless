@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/paul/)",
-      "Bash(curl -s -o /dev/null -w \"/: %{http_code}\\\\n/paul/: \" http://localhost:3000/)"
+      "Bash(curl -s -o /dev/null -w \"/: %{http_code}\\\\n/paul/: \" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"/paul/: %{http_code}\\\\n\" http://localhost:3000/paul/)",
+      "Bash(curl -s -o /dev/null -w \"/exodus/: %{http_code}\\\\n/paul/: %{http_code}\\\\n/: %{http_code}\\\\n\" http://localhost:3000/exodus/ http://localhost:3000/paul/ http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"/exodus/: %{http_code}\\\\n\" http://localhost:3000/exodus/)"
     ]
   }
 }

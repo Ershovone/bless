@@ -2,10 +2,22 @@ import { geoMercator, type GeoProjection } from "d3-geo";
 import { MAP_BOUNDS, MAP_SIZE } from "@/constants/map";
 import type { Point } from "@/types/atlas";
 
-export function makeProjection(): GeoProjection {
-  const { lonMin, lonMax, latMin, latMax } = MAP_BOUNDS;
+type Bounds = {
+  lonMin: number;
+  lonMax: number;
+  latMin: number;
+  latMax: number;
+};
+
+type Size = { width: number; height: number };
+
+export function makeProjection(
+  bounds: Bounds = MAP_BOUNDS,
+  size: Size = MAP_SIZE,
+): GeoProjection {
+  const { lonMin, lonMax, latMin, latMax } = bounds;
   return geoMercator().fitSize(
-    [MAP_SIZE.width, MAP_SIZE.height],
+    [size.width, size.height],
     {
       type: "Polygon",
       coordinates: [[

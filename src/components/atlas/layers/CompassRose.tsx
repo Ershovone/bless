@@ -4,9 +4,13 @@ import { FONT_FAMILIES } from "@/constants/design";
 const OFFSET_X = 80;
 const OFFSET_Y = 80;
 
-export function CompassRose() {
+type CompassRoseProps = {
+  mapWidth?: number;
+};
+
+export function CompassRose({ mapWidth = MAP_SIZE.width }: CompassRoseProps = {}) {
   return (
-    <g transform={`translate(${MAP_SIZE.width - OFFSET_X}, ${OFFSET_Y})`} opacity="0.7">
+    <g transform={`translate(${mapWidth - OFFSET_X}, ${OFFSET_Y})`} opacity="0.7">
       <circle r="34" fill="rgba(253,244,224,0.5)" stroke="var(--color-sepia)" strokeWidth="0.8" />
       <circle r="24" fill="none" stroke="var(--color-sepia)" strokeWidth="0.5" />
       <path d="M 0,-28 L 4,0 L 0,28 L -4,0 Z" fill="var(--color-rust)" />

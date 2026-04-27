@@ -8,7 +8,7 @@ type NavItem = {
 
 const ITEMS: NavItem[] = [
   { slug: null, ru: "Бытие", en: "Genesis" },
-  { slug: null, ru: "Исход", en: "Exodus" },
+  { slug: "exodus", ru: "Исход", en: "Exodus" },
   { slug: null, ru: "Царства", en: "Kings" },
   { slug: null, ru: "Евангелия", en: "Gospels" },
   { slug: "paul", ru: "Деяния Апостолов", en: "Acts of the Apostles" },

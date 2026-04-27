@@ -1,12 +1,12 @@
 export const EXODUS_MAP_BOUNDS = {
-  lonMin: 28.5,
-  lonMax: 37.5,
-  latMin: 27,
-  latMax: 33,
+  lonMin: 22,
+  lonMax: 42,
+  latMin: 25,
+  latMax: 33.5,
 } as const;
 
 export const EXODUS_MAP_SIZE = {
-  width: 1400,
+  width: 1800,
   height: 900,
 } as const;
 

@@ -79,7 +79,7 @@ export function ExodusAtlasMap({
   return (
     <Wrapper>
       <MapSvg zoomPan={zoomPan}>
-        <MapDefs />
+        <MapDefs width={EXODUS_MAP_SIZE.width} height={EXODUS_MAP_SIZE.height} />
         <SeaBackground width={EXODUS_MAP_SIZE.width} height={EXODUS_MAP_SIZE.height} />
         <ExodusGraticule proj={proj} />
         {world && <LandLayer path={world.landPath} />}

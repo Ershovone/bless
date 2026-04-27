@@ -4,7 +4,15 @@ export const MAP_CLIP_ID = "mapClip";
 export const HATCH_PATTERN_ID = "hatchLand";
 export const SEA_GRADIENT_ID = "seaGrad";
 
-export function MapDefs() {
+type MapDefsProps = {
+  width?: number;
+  height?: number;
+};
+
+export function MapDefs({
+  width = MAP_SIZE.width,
+  height = MAP_SIZE.height,
+}: MapDefsProps = {}) {
   return (
     <defs>
       <pattern
@@ -23,7 +31,7 @@ export function MapDefs() {
       </radialGradient>
 
       <clipPath id={MAP_CLIP_ID}>
-        <rect width={MAP_SIZE.width} height={MAP_SIZE.height} />
+        <rect width={width} height={height} />
       </clipPath>
     </defs>
   );

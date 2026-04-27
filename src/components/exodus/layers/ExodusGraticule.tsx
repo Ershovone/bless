@@ -3,11 +3,11 @@ import { EXODUS_MAP_BOUNDS } from "@/data/exodus/mapConstants";
 import { project } from "@/lib/geo/projection";
 import { FONT_FAMILIES } from "@/constants/design";
 
-const LON_TICKS = [29, 31, 33, 35, 37];
-const LAT_TICKS = [27, 29, 31, 33];
+const LON_TICKS = [25, 28, 31, 34, 37, 40];
+const LAT_TICKS = [25, 28, 31];
 
-const LON_LABEL_TICKS = [29, 31, 33, 35, 37];
-const LAT_LABEL_TICKS = [27, 29, 31, 33];
+const LON_LABEL_TICKS = [25, 28, 31, 34, 37, 40];
+const LAT_LABEL_TICKS = [25, 28, 31];
 
 export function ExodusGraticule({ proj }: { proj: GeoProjection }) {
   const { lonMin, lonMax, latMin, latMax } = EXODUS_MAP_BOUNDS;

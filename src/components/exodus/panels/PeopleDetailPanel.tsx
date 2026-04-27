@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { EXODUS_PEOPLES_BY_ID } from "@/data/exodus/peoples";
 import { useExodusStore } from "@/hooks/useExodusStore";
 import { ScriptureRef } from "@/components/bible/ScriptureRef";
+import { ProseWithRefs } from "@/components/bible/ProseWithRefs";
 
 export function PeopleDetailPanel() {
   const selected = useExodusStore((s) => s.selectedPeople);
@@ -61,12 +62,16 @@ export function PeopleDetailPanel() {
         <div className="mb-1 text-[11px] uppercase tracking-[0.25em] text-(--color-rust)">
           Происхождение
         </div>
-        <p className="mb-5 text-[15px] leading-[1.55]">{people.origin}</p>
+        <p className="mb-5 text-[15px] leading-[1.55]">
+          <ProseWithRefs text={people.origin} />
+        </p>
 
         <div className="mb-1 text-[11px] uppercase tracking-[0.25em] text-(--color-rust)">
           В контексте Исхода
         </div>
-        <p className="mb-5 text-[15px] leading-[1.6]">{people.description}</p>
+        <p className="mb-5 text-[15px] leading-[1.6]">
+          <ProseWithRefs text={people.description} />
+        </p>
 
         {people.refs.length > 0 && (
           <div className="mt-6 border-t border-(--color-sepia-light)/60 pt-4">

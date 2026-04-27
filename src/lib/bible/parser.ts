@@ -7,6 +7,41 @@ function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/** Inline-ref segments produced by parseProseRefs. */
+export type ProseSegment = string | { refText: string };
+
+let inlineRefRegex: RegExp | null = null;
+
+function getInlineRefRegex(): RegExp {
+  if (inlineRefRegex) return inlineRefRegex;
+  const abbrevs = getSortedAbbreviations()
+    .map(([a]) => escapeRegExp(a))
+    .join("|");
+  // Book abbrev + separator + chapter[range][:verse[range]][,chapter[:verse[range]]]…
+  const spec = "\\d+(?:[-–]\\d+)?(?::\\d+(?:[-–]\\d+)?(?:,\\s?\\d+(?::\\d+(?:[-–]\\d+)?)?)*)?";
+  inlineRefRegex = new RegExp(`(?:${abbrevs})[\\s.\u00A0]+${spec}`, "g");
+  return inlineRefRegex;
+}
+
+/**
+ * Find scripture refs embedded in prose text and split into segments
+ * suitable for rendering with <ProseWithRefs>.
+ */
+export function parseProseRefs(text: string): ProseSegment[] {
+  const re = new RegExp(getInlineRefRegex().source, "g");
+  const result: ProseSegment[] = [];
+  let lastIdx = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > lastIdx) result.push(text.slice(lastIdx, m.index));
+    result.push({ refText: m[0] });
+    lastIdx = m.index + m[0].length;
+    if (m[0].length === 0) re.lastIndex++;
+  }
+  if (lastIdx < text.length) result.push(text.slice(lastIdx));
+  return result;
+}
+
 function expandVerseRange(spec: string): number[] {
   const trimmed = spec.trim();
   if (!trimmed) return [];

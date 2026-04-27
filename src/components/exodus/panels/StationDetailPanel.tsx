@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { EXODUS_STATIONS, EXODUS_STATION_ORDER } from "@/data/exodus/stations";
 import { useExodusStore } from "@/hooks/useExodusStore";
 import { ScriptureRef } from "@/components/bible/ScriptureRef";
+import { ProseWithRefs } from "@/components/bible/ProseWithRefs";
 
 export function StationDetailPanel() {
   const selected = useExodusStore((s) => s.selectedStation);
@@ -77,7 +78,9 @@ export function StationDetailPanel() {
         </div>
 
         {station.significance && (
-          <p className="mb-5 text-[15px] leading-[1.6]">{station.significance}</p>
+          <p className="mb-5 text-[15px] leading-[1.6]">
+            <ProseWithRefs text={station.significance} />
+          </p>
         )}
 
         {!station.significance && (!station.events || station.events.length === 0) && (
@@ -98,7 +101,9 @@ export function StationDetailPanel() {
                   <div className="mb-1 text-xs italic">
                     <ScriptureRef refText={ev.ref} className="text-(--color-rust)" />
                   </div>
-                  <div className="text-[15px] leading-[1.55]">{ev.ru}</div>
+                  <div className="text-[15px] leading-[1.55]">
+                    <ProseWithRefs text={ev.ru} />
+                  </div>
                 </div>
               ))}
             </div>

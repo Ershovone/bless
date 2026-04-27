@@ -7,6 +7,7 @@ import { EPISTLES } from "@/data/epistles";
 import { EPISTLE_GLYPH } from "@/constants/design";
 import { useAtlasStore } from "@/hooks/useAtlasStore";
 import { ScriptureRef } from "@/components/bible/ScriptureRef";
+import { ProseWithRefs } from "@/components/bible/ProseWithRefs";
 
 export function CityDetailPanel() {
   const selectedCity = useAtlasStore((s) => s.selectedCity);
@@ -98,7 +99,9 @@ export function CityDetailPanel() {
                     <ScriptureRef refText={ev.ref} />
                   </span>
                 </div>
-                <div className="text-[15px] leading-[1.55] text-(--color-ink)">{ev.ru}</div>
+                <div className="text-[15px] leading-[1.55] text-(--color-ink)">
+                  <ProseWithRefs text={ev.ru} />
+                </div>
               </div>
             ))}
           </div>

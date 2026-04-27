@@ -13,7 +13,11 @@
       "Bash(grep -E '/\\\\.claude/tasks/[^/]+\\\\.md$')",
       "Bash(grep -vE '/\\(BOARD|README\\)\\\\.md$')",
       "Bash(bash .claude/scripts/regenerate-board.sh)",
-      "Bash(python3 -c \"import sys, json; json.load\\(sys.stdin\\); print\\('OK'\\)\")"
+      "Bash(python3 -c \"import sys, json; json.load\\(sys.stdin\\); print\\('OK'\\)\")",
+      "Bash(git stash *)",
+      "Bash(git commit -m ' *)",
+      "Bash(brew install *)",
+      "Bash(/opt/homebrew/bin/gh pr create --title 'feat: add /api/health route' --body ' *)"
     ],
     "additionalDirectories": [
       "/Users/ershov/Documents/development/projects/bless/.claude",

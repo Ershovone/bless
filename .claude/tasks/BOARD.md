@@ -2,11 +2,9 @@
 
 _Автогенерация из `.claude/tasks/*.md`. Не редактируй вручную — перезатрётся хуком при следующем write/edit задачи._
 
-## Open (1)
+## Open (0)
 
-| Pri | ID | Type | Att | Title |
-|-----|----|------|-----|-------|
-| 5 | [`demo-health-route`](5-demo-health-route.md) | feature | 0 | DEMO: добавить /api/health route |
+_Пусто._
 
 ## In Progress (0)
 
@@ -16,9 +14,11 @@ _Пусто._
 
 _Пусто._
 
-## Done (0)
+## Done (1)
 
-_Пусто._
+| Pri | ID | Type | Att | Title |
+|-----|----|------|-----|-------|
+| 5 | [`demo-health-route`](5-demo-health-route.md) | feature | 1 | DEMO: добавить /api/health route |
 
 ---
-_Обновлено: 2026-04-27 22:29:35_
+_Обновлено: 2026-04-27 22:44:54_

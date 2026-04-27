@@ -1,5 +1,12 @@
 import type { ExodusPhase } from "@/types/exodus";
-import { COLORS } from "@/constants/design";
+
+const PHASE_COLORS = {
+  escape: "#b8362e",       // bold red — drama of escape
+  to_sinai: "#d96d2c",     // warm orange — desert sun
+  law: "#a85e16",          // deep amber-bronze — gravity of Law
+  wandering: "#5a4426",    // deep umber — long weary years
+  to_promised: "#2c6d8e",  // blue — fulfilment / Jordan
+} as const;
 
 export const EXODUS_PHASES: ExodusPhase[] = [
   {
@@ -8,7 +15,7 @@ export const EXODUS_PHASES: ExodusPhase[] = [
     en: "Escape from Egypt",
     yearsBC: "~1446 до Р.Х.",
     acts: "Исх 12–15 · Чис 33:3–8",
-    color: COLORS.rust,
+    color: PHASE_COLORS.escape,
     description:
       "Десять казней. Пасха. Ночной выход из Раамсеса. Чудесный переход через Чермное море и гибель войска фараона.",
     stations: ["rameses", "succoth", "etham", "pi_hahiroth"],
@@ -19,7 +26,7 @@ export const EXODUS_PHASES: ExodusPhase[] = [
     en: "Journey to Sinai",
     yearsBC: "1446 до Р.Х. · 3 месяца",
     acts: "Исх 15–18 · Чис 33:8–14",
-    color: COLORS.amber,
+    color: PHASE_COLORS.to_sinai,
     description:
       "Горькая вода Мерры, оазис Елима, стоянка у моря, манна и перепела в пустыне Син, вода из скалы и битва с Амалекитянами в Рефидиме.",
     stations: [
@@ -38,7 +45,7 @@ export const EXODUS_PHASES: ExodusPhase[] = [
     en: "At the Mountain",
     yearsBC: "1446–1445 до Р.Х. · ~11 месяцев",
     acts: "Исх 19 — Чис 10 · Чис 33:15",
-    color: COLORS.sand,
+    color: PHASE_COLORS.law,
     description:
       "Богоявление на Синае. Десять Заповедей и Закон. Скиния и священство. Золотой телец. Скрижали обновлены.",
     stations: ["sinai"],
@@ -49,7 +56,7 @@ export const EXODUS_PHASES: ExodusPhase[] = [
     en: "38 Years of Wandering",
     yearsBC: "1445–1407 до Р.Х.",
     acts: "Чис 11–20 · Чис 33:16–36",
-    color: COLORS.sepia,
+    color: PHASE_COLORS.wandering,
     description:
       "Соглядатаи приносят дурную весть. Поколение, вышедшее из Египта, осуждено умереть в пустыне. Двадцать одна стоянка через Синай и Негев — большинство мест неизвестны точно. Возвращение в Кадес-Варни в год 40-й.",
     stations: [
@@ -82,7 +89,7 @@ export const EXODUS_PHASES: ExodusPhase[] = [
     en: "To the Promised Land",
     yearsBC: "1407–1406 до Р.Х.",
     acts: "Чис 20 — Втор 34 · Чис 33:37–49",
-    color: COLORS.modernBlue,
+    color: PHASE_COLORS.to_promised,
     description:
       "Смерть Аарона на Горе Ор. Медный змей в Пуноне. Победа над Сигоном и Огом. С Горы Нево Моисей видит Землю и умирает. Иисус Навин ведёт народ через Иордан.",
     stations: [

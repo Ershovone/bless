@@ -49,6 +49,7 @@ export function ExodusAtlasMap({
   const activePhaseIdx = useExodusStore((s) => s.activePhaseIdx);
   const modernView = useExodusStore((s) => s.modernView);
   const setZoomDisplay = useExodusStore((s) => s.setZoomDisplay);
+  const zoomDisplay = useExodusStore((s) => s.zoomDisplay);
 
   const { proj, pathGen } = useExodusProjection();
   const { data: world } = useWorldTopology(proj, pathGen);
@@ -96,41 +97,51 @@ export function ExodusAtlasMap({
         />
         <PeoplesLayer proj={proj} />
 
-        {/* Inactive phase paths — faint sepia, dashed */}
+        {/* Inactive phase paths — parchment halo + dim ink dash so they read on territory fills */}
         {phasePaths.map(({ phaseIdx, d }) =>
           d && phaseIdx !== activePhaseIdx ? (
-            <path
-              key={`inactive-${phaseIdx}`}
-              d={d}
-              fill="none"
-              stroke="var(--color-sepia-light)"
-              strokeWidth="1"
-              strokeDasharray="2 4"
-              opacity="0.45"
-              strokeLinecap="round"
-            />
+            <g key={`inactive-${phaseIdx}`}>
+              <path
+                d={d}
+                fill="none"
+                stroke="var(--color-parchment-light)"
+                strokeWidth="4"
+                strokeLinecap="round"
+                opacity="0.7"
+              />
+              <path
+                d={d}
+                fill="none"
+                stroke="var(--color-ink-muted)"
+                strokeWidth="1.6"
+                strokeDasharray="4 4"
+                opacity="0.65"
+                strokeLinecap="round"
+              />
+            </g>
           ) : null,
         )}
 
-        {/* Active phase path — colored on top */}
+        {/* Active phase path — bold solid line lifted by parchment halo */}
         {phasePaths.map(({ phaseIdx, d, color }) =>
           d && phaseIdx === activePhaseIdx ? (
             <g key={`active-${phaseIdx}`}>
               <path
                 d={d}
                 fill="none"
-                stroke="var(--color-ink)"
-                strokeWidth="3"
+                stroke="var(--color-parchment-light)"
+                strokeWidth="7"
                 strokeLinecap="round"
-                opacity="0.25"
+                strokeLinejoin="round"
+                opacity="0.85"
               />
               <path
                 d={d}
                 fill="none"
                 stroke={color}
-                strokeWidth="1.8"
+                strokeWidth="3.2"
                 strokeLinecap="round"
-                strokeDasharray="6 3"
+                strokeLinejoin="round"
               />
             </g>
           ) : null,
@@ -150,6 +161,7 @@ export function ExodusAtlasMap({
         onZoomOut={zoomPan.zoomOut}
         onReset={zoomPan.reset}
         position={zoomPosition}
+        zoomValue={zoomDisplay}
       />
     </Wrapper>
   );

@@ -9,6 +9,8 @@ type ZoomControlsProps = {
   onZoomOut: () => void;
   onReset: () => void;
   position?: ZoomControlsPosition;
+  /** Override the zoom value source — defaults to the Paul store. */
+  zoomValue?: number;
 };
 
 const BUTTON_CLS =
@@ -24,8 +26,10 @@ export function ZoomControls({
   onZoomOut,
   onReset,
   position = "bottom-left",
+  zoomValue,
 }: ZoomControlsProps) {
-  const zoom = useAtlasStore((s) => s.zoomDisplay);
+  const storeZoom = useAtlasStore((s) => s.zoomDisplay);
+  const zoom = zoomValue ?? storeZoom;
   return (
     <div
       className={`absolute z-[5] flex flex-col gap-1 border border-(--color-sepia-light) bg-(--color-parchment-light)/90 p-1.5 shadow-[0_4px_12px_rgba(74,50,30,0.25)] ${POSITION_CLS[position]}`}

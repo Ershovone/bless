@@ -19,9 +19,9 @@ type ProjectedPeople = {
 };
 
 const LABEL_BASE_SIZE = 13;
-const POLY_FILL_OPACITY = 0.14;
-const POLY_FILL_OPACITY_HOVER = 0.28;
-const POLY_STROKE_OPACITY = 0.55;
+const POLY_FILL_OPACITY = 0.22;
+const POLY_FILL_OPACITY_HOVER = 0.42;
+const POLY_STROKE_OPACITY = 0.75;
 
 export function PeoplesLayer({ proj }: { proj: GeoProjection }) {
   const showPeoples = useExodusStore((s) => s.showPeoples);
@@ -62,8 +62,8 @@ export function PeoplesLayer({ proj }: { proj: GeoProjection }) {
             fillOpacity={isSelected ? POLY_FILL_OPACITY_HOVER : POLY_FILL_OPACITY}
             stroke={p.color}
             strokeOpacity={POLY_STROKE_OPACITY}
-            strokeWidth={isSelected ? 1.6 : 0.8}
-            strokeDasharray={isSelected ? undefined : "2 3"}
+            strokeWidth={isSelected ? 2.4 : 1.4}
+            strokeDasharray={isSelected ? undefined : "3 3"}
             onClick={(e) => {
               e.stopPropagation();
               setSelected(p.id);

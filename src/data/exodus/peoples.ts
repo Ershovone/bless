@@ -1,5 +1,16 @@
 import type { People } from "@/types/exodus";
-import { COLORS } from "@/constants/design";
+
+const PEOPLE_COLORS = {
+  egyptians: "#c9843d",       // gold-amber (sun, sand of Egypt)
+  amalekites: "#a83a26",      // deep terracotta (warlike)
+  midianites: "#d4a574",      // sand
+  edomites: "#7a2d1f",        // dark blood-red (Edom = "red")
+  moabites: "#7d8443",        // olive
+  ammonites: "#6b5a3a",       // warm taupe
+  amorites: "#8a6677",        // dusty mauve
+  canaanites: "#7a8a4a",      // sage olive-green
+  philistines: "#3a6a8a",     // slate blue (Aegean origin)
+} as const;
 
 export const EXODUS_PEOPLES: People[] = [
   {
@@ -21,7 +32,7 @@ export const EXODUS_PEOPLES: People[] = [
       [29.8, 30.0],
     ],
     centroid: [31.5, 28.2],
-    color: COLORS.amber,
+    color: PEOPLE_COLORS.egyptians,
   },
   {
     id: "amalekites",
@@ -40,7 +51,7 @@ export const EXODUS_PEOPLES: People[] = [
       [33.0, 30.5],
     ],
     centroid: [34.3, 30.5],
-    color: COLORS.rust,
+    color: PEOPLE_COLORS.amalekites,
   },
   {
     id: "midianites",
@@ -58,7 +69,7 @@ export const EXODUS_PEOPLES: People[] = [
       [35.5, 29.5],
     ],
     centroid: [36.3, 28.7],
-    color: COLORS.sand,
+    color: PEOPLE_COLORS.midianites,
   },
   {
     id: "edomites",
@@ -76,7 +87,7 @@ export const EXODUS_PEOPLES: People[] = [
       [35.0, 29.0],
     ],
     centroid: [35.5, 29.7],
-    color: COLORS.rust,
+    color: PEOPLE_COLORS.edomites,
   },
   {
     id: "moabites",
@@ -94,7 +105,7 @@ export const EXODUS_PEOPLES: People[] = [
       [35.45, 31.6],
     ],
     centroid: [35.95, 31.2],
-    color: COLORS.amber,
+    color: PEOPLE_COLORS.moabites,
   },
   {
     id: "ammonites",
@@ -112,7 +123,7 @@ export const EXODUS_PEOPLES: People[] = [
       [35.7, 32.5],
     ],
     centroid: [36.2, 32.1],
-    color: COLORS.sepia,
+    color: PEOPLE_COLORS.ammonites,
   },
   {
     id: "amorites",
@@ -130,7 +141,7 @@ export const EXODUS_PEOPLES: People[] = [
       [35.6, 33.3],
     ],
     centroid: [36.2, 32.55],
-    color: COLORS.sepiaLight,
+    color: PEOPLE_COLORS.amorites,
   },
   {
     id: "canaanites",
@@ -148,7 +159,7 @@ export const EXODUS_PEOPLES: People[] = [
       [34.5, 33.3],
     ],
     centroid: [35.0, 31.9],
-    color: COLORS.sand,
+    color: PEOPLE_COLORS.canaanites,
   },
   {
     id: "philistines",
@@ -166,7 +177,7 @@ export const EXODUS_PEOPLES: People[] = [
       [34.4, 32.05],
     ],
     centroid: [34.65, 31.65],
-    color: COLORS.modernBlue,
+    color: PEOPLE_COLORS.philistines,
   },
 ];
 

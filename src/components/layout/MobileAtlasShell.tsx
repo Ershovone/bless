@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AtlasMap } from "@/components/atlas/AtlasMap";
 import { useAtlasStore } from "@/hooks/useAtlasStore";
 import { InfoCard } from "@/components/controls/InfoCard";
@@ -50,9 +50,8 @@ export function MobileAtlasShell() {
   const [openTab, setOpenTab] = useState<MobileSheetTabId | null>(null);
   const playing = useAtlasStore((s) => s.playing);
 
-  useEffect(() => {
-    if (playing) setOpenTab(null);
-  }, [playing]);
+  // When playing, visually hide the sheet without persisting null in state
+  const activeTab = playing ? null : openTab;
 
   const handleTabClick = (tab: MobileSheetTabId) => {
     setOpenTab((prev) => (prev === tab ? null : tab));
@@ -65,13 +64,13 @@ export function MobileAtlasShell() {
         <AtlasMap variant="fullscreen" />
       </div>
       <MobileSheet
-        open={openTab !== null}
-        title={openTab ? TAB_TITLE[openTab] : undefined}
+        open={activeTab !== null}
+        title={activeTab ? TAB_TITLE[activeTab] : undefined}
         onClose={() => setOpenTab(null)}
       >
-        {openTab && <SheetContent tab={openTab} />}
+        {activeTab && <SheetContent tab={activeTab} />}
       </MobileSheet>
-      <MobileBottomDock activeTab={openTab} onTabClick={handleTabClick} />
+      <MobileBottomDock activeTab={activeTab} onTabClick={handleTabClick} />
     </div>
   );
 }

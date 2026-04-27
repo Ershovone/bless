@@ -11,6 +11,7 @@ import { ChronologyScrubber } from "@/components/panels/ChronologyScrubber";
 import { ActsIndex } from "@/components/panels/ActsIndex";
 import { ScriptureQuote } from "@/components/panels/ScriptureQuote";
 import { CityDetailPanel } from "@/components/panels/CityDetailPanel";
+import { MobileAtlasShell } from "@/components/layout/MobileAtlasShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useAtlasStore } from "@/hooks/useAtlasStore";
 import { useURLSync } from "@/hooks/useURLSync";
@@ -36,21 +37,29 @@ export function PaulAtlasView({ initialJourneyIdx }: PaulAtlasViewProps) {
       <Suspense fallback={null}>
         <URLSync />
       </Suspense>
-      <PageHeader
-        activeSlug="paul"
-        titleRu="Путешествия Апостола Павла"
-        titleEn="The Journeys of the Apostle Paul"
-        subtitle="Деяния святых Апостолов · Acta Apostolorum · 46–62 A.D."
-      />
-      <AtlasMap />
-      <JourneyTabs />
-      <InfoCard />
-      <ViewToggles />
-      <CompanionsPanel />
-      <LegDistancesPanel />
-      <ChronologyScrubber />
-      <ActsIndex />
-      <ScriptureQuote />
+
+      <div className="hidden md:contents">
+        <PageHeader
+          activeSlug="paul"
+          titleRu="Путешествия Апостола Павла"
+          titleEn="The Journeys of the Apostle Paul"
+          subtitle="Деяния святых Апостолов · Acta Apostolorum · 46–62 A.D."
+        />
+        <AtlasMap />
+        <JourneyTabs />
+        <InfoCard />
+        <ViewToggles />
+        <CompanionsPanel />
+        <LegDistancesPanel />
+        <ChronologyScrubber />
+        <ActsIndex />
+        <ScriptureQuote />
+      </div>
+
+      <div className="md:hidden">
+        <MobileAtlasShell />
+      </div>
+
       <CityDetailPanel />
     </>
   );

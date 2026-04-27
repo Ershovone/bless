@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { buildRoutePath } from "@/lib/geo/bezier";
 import { CITIES } from "@/data/cities";
 import { COMPANIONS } from "@/data/companions";
@@ -28,7 +28,15 @@ import { ScaleBar } from "./layers/ScaleBar";
 import { SeaBackground } from "./layers/SeaBackground";
 import { Traveler } from "./layers/Traveler";
 
-export function AtlasMap() {
+type AtlasMapVariant = "framed" | "fullscreen";
+
+const FULLSCREEN_WRAPPER_CLS = "absolute inset-0 overflow-hidden";
+
+function FullscreenWrapper({ children }: { children: ReactNode }) {
+  return <div className={FULLSCREEN_WRAPPER_CLS}>{children}</div>;
+}
+
+export function AtlasMap({ variant = "framed" }: { variant?: AtlasMapVariant }) {
   const activeJ = useAtlasStore((s) => s.activeJ);
   const modernView = useAtlasStore((s) => s.modernView);
   const selectedCompanion = useAtlasStore((s) => s.selectedCompanion);
@@ -46,9 +54,11 @@ export function AtlasMap() {
   );
 
   const companion = selectedCompanion ? COMPANIONS[selectedCompanion] : null;
+  const Wrapper = variant === "fullscreen" ? FullscreenWrapper : AtlasFrame;
+  const zoomPosition = variant === "fullscreen" ? "bottom-right" : "bottom-left";
 
   return (
-    <AtlasFrame>
+    <Wrapper>
       <MapSvg zoomPan={zoomPan}>
         <MapDefs />
         <SeaBackground />
@@ -77,7 +87,8 @@ export function AtlasMap() {
         onZoomIn={zoomPan.zoomIn}
         onZoomOut={zoomPan.zoomOut}
         onReset={zoomPan.reset}
+        position={zoomPosition}
       />
-    </AtlasFrame>
+    </Wrapper>
   );
 }

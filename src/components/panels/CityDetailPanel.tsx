@@ -46,13 +46,13 @@ export function CityDetailPanel() {
   return (
     <>
       <div
-        className="fixed inset-0 z-20 backdrop-blur-[2px]"
+        className="fixed inset-0 z-[40] backdrop-blur-[2px]"
         style={{ background: "rgba(58,40,23,0.35)" }}
         onClick={() => setSelectedCity(null)}
         aria-hidden
       />
       <aside
-        className="fixed right-0 top-0 bottom-0 z-[21] overflow-y-auto border-l-2 border-(--color-sepia-light) px-9 py-10 font-serif text-(--color-ink)"
+        className="fixed right-0 top-0 bottom-0 z-[41] overflow-y-auto border-l-2 border-(--color-sepia-light) px-9 py-10 font-serif text-(--color-ink)"
         style={{
           width: "min(440px, 90vw)",
           background: "linear-gradient(135deg, #fdf4e0, #f0e4ca)",

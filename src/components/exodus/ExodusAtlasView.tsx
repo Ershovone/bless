@@ -9,6 +9,7 @@ import { PlaguesPanel } from "./panels/PlaguesPanel";
 import { PeopleDetailPanel } from "./panels/PeopleDetailPanel";
 import { StationDetailPanel } from "./panels/StationDetailPanel";
 import { ExodusMobileShell } from "./mobile/ExodusMobileShell";
+import { BibleReader } from "@/components/bible/BibleReader";
 
 export function ExodusAtlasView() {
   return (
@@ -33,6 +34,7 @@ export function ExodusAtlasView() {
 
       <PeopleDetailPanel />
       <StationDetailPanel />
+      <BibleReader />
     </>
   );
 }

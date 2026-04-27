@@ -6,6 +6,7 @@ import { CITY_DETAILS } from "@/data/cityDetails";
 import { EPISTLES } from "@/data/epistles";
 import { EPISTLE_GLYPH } from "@/constants/design";
 import { useAtlasStore } from "@/hooks/useAtlasStore";
+import { ScriptureRef } from "@/components/bible/ScriptureRef";
 
 export function CityDetailPanel() {
   const selectedCity = useAtlasStore((s) => s.selectedCity);
@@ -93,7 +94,9 @@ export function CityDetailPanel() {
                   <span className="text-sm font-semibold tracking-[0.1em] text-(--color-rust)">
                     {ev.year} AD
                   </span>
-                  <span className="text-xs italic text-(--color-sepia)">{ev.ref}</span>
+                  <span className="text-xs italic text-(--color-sepia)">
+                    <ScriptureRef refText={ev.ref} />
+                  </span>
                 </div>
                 <div className="text-[15px] leading-[1.55] text-(--color-ink)">{ev.ru}</div>
               </div>

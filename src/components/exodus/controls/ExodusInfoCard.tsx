@@ -3,6 +3,9 @@
 import { EXODUS_PHASES } from "@/data/exodus/phases";
 import { EXODUS_STATIONS } from "@/data/exodus/stations";
 import { useExodusStore } from "@/hooks/useExodusStore";
+import { ScriptureRef } from "@/components/bible/ScriptureRef";
+
+const REF_SEPARATOR = " · ";
 
 export function ExodusInfoCard() {
   const activeIdx = useExodusStore((s) => s.activePhaseIdx);
@@ -15,7 +18,12 @@ export function ExodusInfoCard() {
     >
       <div>
         <div className="mb-1 text-xs uppercase tracking-[0.2em] text-(--color-rust)">
-          {phase.acts}
+          {phase.acts.split(REF_SEPARATOR).map((part, i, arr) => (
+            <span key={i}>
+              <ScriptureRef refText={part} />
+              {i < arr.length - 1 ? REF_SEPARATOR : ""}
+            </span>
+          ))}
         </div>
         <h2 className="m-0 text-[30px] font-normal leading-tight">{phase.ru}</h2>
         <div className="mt-1 text-[15px] italic text-(--color-sepia)">

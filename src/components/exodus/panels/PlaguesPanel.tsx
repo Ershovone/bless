@@ -4,6 +4,7 @@ import { useState } from "react";
 import { EXODUS_PLAGUES } from "@/data/exodus/plagues";
 import type { PlagueId } from "@/types/exodus";
 import { SectionLabel } from "@/components/layout/SectionLabel";
+import { ScriptureRef } from "@/components/bible/ScriptureRef";
 
 export function PlaguesPanel() {
   const [openId, setOpenId] = useState<PlagueId | null>(null);
@@ -38,8 +39,11 @@ export function PlaguesPanel() {
                 </div>
                 <span className="text-[15px] font-medium">{p.ru}</span>
                 <span className="text-[11px] italic text-(--color-sepia)">{p.en}</span>
-                <span className="font-sans text-[10px] tracking-[0.1em] text-(--color-sepia-light)">
-                  {p.ref}
+                <span
+                  className="font-sans text-[10px] tracking-[0.1em] text-(--color-sepia-light)"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <ScriptureRef refText={p.ref} />
                 </span>
               </button>
             </li>

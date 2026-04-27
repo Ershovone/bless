@@ -11,6 +11,7 @@ import { ChronologyScrubber } from "@/components/panels/ChronologyScrubber";
 import { ActsIndex } from "@/components/panels/ActsIndex";
 import { ScriptureQuote } from "@/components/panels/ScriptureQuote";
 import { CityDetailPanel } from "@/components/panels/CityDetailPanel";
+import { BibleReader } from "@/components/bible/BibleReader";
 import { MobileAtlasShell } from "@/components/layout/MobileAtlasShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useAtlasStore } from "@/hooks/useAtlasStore";
@@ -61,6 +62,7 @@ export function PaulAtlasView({ initialJourneyIdx }: PaulAtlasViewProps) {
       </div>
 
       <CityDetailPanel />
+      <BibleReader />
     </>
   );
 }

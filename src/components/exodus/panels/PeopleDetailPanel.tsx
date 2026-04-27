@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { EXODUS_PEOPLES_BY_ID } from "@/data/exodus/peoples";
 import { useExodusStore } from "@/hooks/useExodusStore";
+import { ScriptureRef } from "@/components/bible/ScriptureRef";
 
 export function PeopleDetailPanel() {
   const selected = useExodusStore((s) => s.selectedPeople);
@@ -74,7 +75,9 @@ export function PeopleDetailPanel() {
             </div>
             <ul className="m-0 list-none space-y-1.5 p-0 text-[14px] italic text-(--color-sepia)">
               {people.refs.map((ref, i) => (
-                <li key={i}>{ref}</li>
+                <li key={i}>
+                  <ScriptureRef refText={ref} />
+                </li>
               ))}
             </ul>
           </div>

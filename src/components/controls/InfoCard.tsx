@@ -4,6 +4,7 @@ import { JOURNEYS } from "@/data/journeys";
 import { CITIES } from "@/data/cities";
 import { useAtlasStore } from "@/hooks/useAtlasStore";
 import { PlayButton } from "./PlayButton";
+import { ScriptureRef } from "@/components/bible/ScriptureRef";
 
 export function InfoCard() {
   const activeJ = useAtlasStore((s) => s.activeJ);
@@ -16,7 +17,7 @@ export function InfoCard() {
     >
       <div>
         <div className="mb-1 text-xs uppercase tracking-[0.2em] text-(--color-rust)">
-          {journey.acts}
+          <ScriptureRef refText={journey.acts} />
         </div>
         <h2 className="m-0 text-[32px] font-normal leading-none">{journey.ru}</h2>
         <div className="mt-1 text-[15px] italic text-(--color-sepia)">

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { EXODUS_STATIONS, EXODUS_STATION_ORDER } from "@/data/exodus/stations";
 import { useExodusStore } from "@/hooks/useExodusStore";
+import { ScriptureRef } from "@/components/bible/ScriptureRef";
 
 export function StationDetailPanel() {
   const selected = useExodusStore((s) => s.selectedStation);
@@ -61,8 +62,18 @@ export function StationDetailPanel() {
         )}
         <div className="mb-5 font-sans text-[11px] tracking-[0.15em] text-(--color-sepia-light)">
           {station.lat.toFixed(2)}°N · {station.lon.toFixed(2)}°E
-          {station.exodusRef ? ` · ${station.exodusRef}` : ""}
-          {station.numbersRef ? ` · ${station.numbersRef}` : ""}
+          {station.exodusRef && (
+            <>
+              {" · "}
+              <ScriptureRef refText={station.exodusRef} />
+            </>
+          )}
+          {station.numbersRef && (
+            <>
+              {" · "}
+              <ScriptureRef refText={station.numbersRef} />
+            </>
+          )}
         </div>
 
         {station.significance && (
@@ -84,7 +95,9 @@ export function StationDetailPanel() {
             <div className="space-y-4">
               {station.events.map((ev, i) => (
                 <div key={i}>
-                  <div className="mb-1 text-xs italic text-(--color-rust)">{ev.ref}</div>
+                  <div className="mb-1 text-xs italic">
+                    <ScriptureRef refText={ev.ref} className="text-(--color-rust)" />
+                  </div>
                   <div className="text-[15px] leading-[1.55]">{ev.ru}</div>
                 </div>
               ))}

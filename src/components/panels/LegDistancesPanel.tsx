@@ -35,37 +35,42 @@ export function LegDistancesPanel() {
 
   return (
     <div
-      className="relative z-[2] mx-auto my-3.5 border border-(--color-sepia-light) bg-(--color-parchment-light)/55 px-7 py-5"
+      className="relative z-[2] mx-auto my-3.5 border border-(--color-sepia-light) bg-(--color-parchment-light)/55 px-4 py-4 sm:px-7 sm:py-5"
       style={{ width: "min(96%, 1200px)" }}
     >
       <SectionLabel className="mb-1.5">
         Расстояния пути · <em>Leg-by-Leg Distances</em>
       </SectionLabel>
-      <div className="mb-4 text-[15px] italic text-(--color-sepia)">
+      <div className="mb-4 text-[14px] italic text-(--color-sepia) sm:text-[15px]">
         Всего ≈ {totalKm.toLocaleString("ru-RU")} км · ≈ {Math.round(totalDays)} дней в пути (без учёта стоянок)
       </div>
-      <div className="grid gap-y-2 gap-x-7 sm:grid-cols-2">
+      <div className="grid gap-y-3 gap-x-7 sm:grid-cols-2">
         {journey.route.slice(0, -1).map((id, i) => {
           const leg = estimateLeg(id, journey.route[i + 1], CITIES);
           return (
             <div
               key={i}
-              className="grid items-center gap-2 text-sm"
-              style={{ gridTemplateColumns: "minmax(110px, 1fr) minmax(130px, 1.2fr) minmax(110px, 1fr)" }}
+              className="grid items-center gap-2 text-sm md:[grid-template-columns:minmax(110px,1fr)_minmax(130px,1.2fr)_minmax(110px,1fr)]"
+              style={{ gridTemplateColumns: "1fr auto 1fr" }}
             >
-              <div className="flex flex-col items-end text-right leading-tight">
-                <span className="text-[15px] font-medium text-(--color-ink)">{CITIES[id].en}</span>
-                <span className="mt-0.5 text-[11px] italic tracking-[0.08em]" style={{ color: modeColor(leg.mode) }}>
+              <div className="flex min-w-0 flex-col items-end text-right leading-tight">
+                <span className="break-words text-[14px] font-medium text-(--color-ink) sm:text-[15px]">
+                  {CITIES[id].en}
+                </span>
+                <span
+                  className="mt-0.5 text-[10px] italic tracking-[0.08em] sm:text-[11px]"
+                  style={{ color: modeColor(leg.mode) }}
+                >
                   {modeGlyph(leg.mode)} {modeLabel(leg.mode)}
                 </span>
               </div>
-              <div className="flex flex-col items-center">
+              <div className="flex w-[88px] flex-col items-center sm:w-auto">
                 <div
                   className="mb-0.5 h-0.5 w-full opacity-70"
                   style={{ background: leg.mode === "sea" ? SEA_LINE_BG : LAND_LINE_BG }}
                 />
                 <div className="flex flex-col items-center font-sans">
-                  <div className="text-xs font-semibold tracking-[0.05em] text-(--color-ink)">
+                  <div className="text-[11px] font-semibold tracking-[0.05em] text-(--color-ink) sm:text-xs">
                     {leg.km.toLocaleString("ru-RU")} км
                   </div>
                   <div className="font-serif text-[10px] italic text-(--color-sepia-light)">
@@ -73,8 +78,8 @@ export function LegDistancesPanel() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col leading-tight">
-                <span className="text-[15px] font-medium text-(--color-ink)">
+              <div className="flex min-w-0 flex-col leading-tight">
+                <span className="break-words text-[14px] font-medium text-(--color-ink) sm:text-[15px]">
                   {CITIES[journey.route[i + 1]].en}
                 </span>
               </div>

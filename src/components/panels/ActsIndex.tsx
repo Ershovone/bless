@@ -13,13 +13,13 @@ export function ActsIndex() {
 
   return (
     <section
-      className="relative z-[2] mx-auto mb-5 mt-14 border-t border-(--color-sepia-light) px-5 pb-5 pt-10 text-center"
+      className="relative z-[2] mx-auto mb-5 mt-8 border-t border-(--color-sepia-light) px-3 pb-5 pt-6 text-center sm:mt-14 sm:px-5 sm:pt-10"
       style={{ width: "min(96%, 1500px)" }}
     >
       <Ornament />
-      <h2 className="mx-0 mb-1 mt-4 text-[42px] font-normal leading-[1.05]">
+      <h2 className="mx-0 mb-1 mt-4 text-3xl font-normal leading-tight sm:text-[42px] sm:leading-[1.05]">
         Ссылки на главы Деяний
-        <em className="mt-1 block text-[18px] italic tracking-[0.06em] text-(--color-sepia)">
+        <em className="mt-1 block text-[15px] italic tracking-[0.06em] text-(--color-sepia) sm:text-[18px]">
           The Book of Acts · Chapter Index
         </em>
       </h2>
@@ -58,10 +58,9 @@ export function ActsIndex() {
         })}
       </div>
 
-      <div className="mt-10 border border-(--color-sepia-light) bg-(--color-parchment-light)/40 text-left">
+      <div className="mt-8 border border-(--color-sepia-light) bg-(--color-parchment-light)/40 text-left sm:mt-10">
         <div
-          className="grid border-b border-(--color-sepia-light) px-6 py-3.5 font-sans text-[11px] uppercase tracking-[0.25em] text-(--color-sepia)"
-          style={{ gridTemplateColumns: "110px 1fr 140px" }}
+          className="hidden grid-cols-[80px_1fr_110px] border-b border-(--color-sepia-light) px-3 py-3 font-sans text-[10px] uppercase tracking-[0.2em] text-(--color-sepia) sm:grid sm:grid-cols-[110px_1fr_140px] sm:px-6 sm:py-3.5 sm:text-[11px] sm:tracking-[0.25em]"
         >
           <span>События · Events</span>
           <span>&nbsp;</span>
@@ -70,18 +69,21 @@ export function ActsIndex() {
         {TIMELINE.map((ev, i) => (
           <div
             key={i}
-            className="grid items-baseline border-b border-dotted border-(--color-sepia-light) px-6 py-4.5"
-            style={{ gridTemplateColumns: "110px 1fr 140px" }}
+            className="grid grid-cols-[68px_1fr_auto] items-baseline gap-x-3 border-b border-dotted border-(--color-sepia-light) px-3 py-3 last:border-b-0 sm:grid-cols-[110px_1fr_140px] sm:px-6 sm:py-4.5"
           >
-            <div className="text-[26px] font-medium text-(--color-ink)">
+            <div className="text-xl font-medium text-(--color-ink) sm:text-[26px]">
               {ev.year}
-              <span className="ml-1.5 font-sans text-[11px] tracking-[0.18em] text-(--color-rust)">AD</span>
+              <span className="ml-1 font-sans text-[10px] tracking-[0.15em] text-(--color-rust) sm:ml-1.5 sm:text-[11px] sm:tracking-[0.18em]">
+                AD
+              </span>
             </div>
-            <div className="text-[17px] leading-tight">
+            <div className="min-w-0 text-[15px] leading-tight sm:text-[17px]">
               <div>{ev.ru}</div>
-              <em className="mt-0.5 block text-[13px] text-(--color-sepia)">{ev.en}</em>
+              <em className="mt-0.5 block text-[12px] text-(--color-sepia) sm:text-[13px]">
+                {ev.en}
+              </em>
             </div>
-            <div className="text-right text-base font-medium italic text-(--color-rust)">
+            <div className="text-right text-sm font-medium italic text-(--color-rust) sm:text-base">
               <ScriptureRef refText={ev.ref} />
             </div>
           </div>

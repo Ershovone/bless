@@ -62,12 +62,14 @@ export const JOURNEY_YEAR_RANGES: Array<{ maxYear: number; journeyIdx: number }>
   { maxYear: Infinity, journeyIdx: 3 },
 ];
 
+const STATIONARY_COLOR = "#9a8b73";
+
 export const TIMELINE_SPANS: JourneySpan[] = [
-  { start: 33, end: 34, label: "Обращение", color: COLORS.sepia, dashed: true },
+  { start: 33, end: 34, label: "Обращение", color: STATIONARY_COLOR },
   { start: 46, end: 48, label: "I", color: JOURNEY_COLORS[0] },
   { start: 49, end: 52, label: "II", color: JOURNEY_COLORS[1] },
   { start: 53, end: 57, label: "III", color: JOURNEY_COLORS[2] },
-  { start: 57, end: 59, label: "В Кесарии", color: COLORS.sepia, dashed: true },
+  { start: 57, end: 59, label: "В Кесарии", color: STATIONARY_COLOR },
   { start: 59, end: 62, label: "IV", color: JOURNEY_COLORS[3] },
-  { start: 62, end: 64, label: "Рим", color: COLORS.ink, dashed: true },
+  { start: 62, end: 64, label: "Рим", color: STATIONARY_COLOR },
 ];

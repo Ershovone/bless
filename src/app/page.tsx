@@ -35,11 +35,11 @@ const BOOKS: BookSlot[] = [
     enabled: false,
   },
   {
-    slug: null,
-    ru: "Евангелия",
-    en: "Gospels",
-    ref: "Путь Христа",
-    enabled: false,
+    slug: "gospel",
+    ru: "Евангелие",
+    en: "The Four Gospels",
+    ref: "Жизнь Иисуса Христа · ≈ 5 до н.э. — 30 н.э.",
+    enabled: true,
   },
   {
     slug: "paul",

@@ -1,15 +1,13 @@
 import Link from "next/link";
 
 type NavItem = {
-  slug: string | null;
+  slug: string;
   ru: string;
   en: string;
 };
 
 const ITEMS: NavItem[] = [
-  { slug: null, ru: "Бытие", en: "Genesis" },
   { slug: "exodus", ru: "Исход", en: "Exodus" },
-  { slug: null, ru: "Царства", en: "Kings" },
   { slug: "gospel", ru: "Евангелие", en: "Gospels" },
   { slug: "paul", ru: "Деяния Апостолов", en: "Acts of the Apostles" },
 ];
@@ -38,8 +36,8 @@ export function BibleNav({ activeSlug }: { activeSlug: string }) {
           </span>
         );
         return (
-          <span key={i} className="flex items-center gap-2">
-            {item.slug && !isActive ? (
+          <span key={item.slug} className="flex items-center gap-2">
+            {!isActive ? (
               <Link href={`/${item.slug}/`}>{content}</Link>
             ) : (
               content
@@ -48,9 +46,6 @@ export function BibleNav({ activeSlug }: { activeSlug: string }) {
           </span>
         );
       })}
-      <span className="ml-3 border border-(--color-amber) px-1.5 py-0.5 font-sans text-[9px] uppercase tracking-[0.2em] text-(--color-amber) opacity-75">
-        скоро
-      </span>
     </nav>
   );
 }

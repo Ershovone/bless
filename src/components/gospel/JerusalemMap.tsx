@@ -618,11 +618,6 @@ export function JerusalemMap() {
           position="bottom-right"
         />
 
-        {/* Легенда */}
-        <div className="absolute bottom-2 left-2 flex flex-col gap-0.5 border border-(--color-sepia-light) bg-(--color-parchment-light)/85 px-2.5 py-1.5 font-sans text-[10px] text-(--color-sepia) sm:bottom-3 sm:left-3 sm:gap-1 sm:px-3 sm:py-2 sm:text-[11px]">
-          <div className="mb-0.5 uppercase tracking-[0.2em] text-(--color-rust)">Легенда</div>
-          <div>▲ Храм · ■ дворец · ✿ сад · ◆ гробница · ✝ Голгофа · ≈ купель · ⌂ ворота</div>
-        </div>
       </div>
 
       <p className="mt-4 text-center text-[12px] italic leading-snug text-(--color-sepia)">

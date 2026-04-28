@@ -33,7 +33,9 @@
       "Bash(curl -s -o /dev/null -w \"/exodus/: %{http_code}\\\\n/paul/: %{http_code}\\\\n\" http://localhost:3000/exodus/ http://localhost:3000/paul/)",
       "Bash(curl -s -o /dev/null -w \"exodus.json: %{http_code}\\\\nnumbers.json: %{http_code}\\\\nacts.json: %{http_code}\\\\n\" http://localhost:3000/data/bible/synodal/exo.json http://localhost:3000/data/bible/synodal/num.json http://localhost:3000/data/bible/synodal/act.json)",
       "Bash(curl -s -o /dev/null -w \"rut.json: %{http_code}\\\\njdg.json: %{http_code}\\\\n1ki.json: %{http_code}\\\\n\" http://localhost:3000/data/bible/synodal/rut.json http://localhost:3000/data/bible/synodal/jdg.json http://localhost:3000/data/bible/synodal/1ki.json)",
-      "Bash(curl -s -o /dev/null -w \"amo.json: %{http_code}\\\\n/exodus/: %{http_code}\\\\n\" http://localhost:3000/data/bible/synodal/amo.json http://localhost:3000/exodus/)"
+      "Bash(curl -s -o /dev/null -w \"amo.json: %{http_code}\\\\n/exodus/: %{http_code}\\\\n\" http://localhost:3000/data/bible/synodal/amo.json http://localhost:3000/exodus/)",
+      "Bash(grep -E \"^d|\\\\.ts$\")",
+      "Bash(echo \"EXIT=$?\")"
     ]
   }
 }

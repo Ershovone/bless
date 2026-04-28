@@ -5,6 +5,7 @@ import { TIMELINE } from "@/data/timeline";
 import { ROMAN_NUMERALS } from "@/constants/design";
 import { useAtlasStore } from "@/hooks/useAtlasStore";
 import { Ornament } from "@/components/layout/Ornament";
+import { ScriptureRef } from "@/components/bible/ScriptureRef";
 
 export function ActsIndex() {
   const activeJ = useAtlasStore((s) => s.activeJ);
@@ -43,7 +44,9 @@ export function ActsIndex() {
               <div className="my-3 h-[3px] w-12" style={{ background: j.color }} />
               <div className="text-xl font-medium leading-[1.15]">{j.ru}</div>
               <div className="mt-0.5 text-[13px] italic opacity-75">{j.en}</div>
-              <div className="mt-4 text-lg font-medium">{j.acts}</div>
+              <div className="mt-4 text-lg font-medium">
+                <ScriptureRef refText={j.acts} />
+              </div>
               <div className="mt-1 font-sans text-[11px] uppercase tracking-[0.18em] opacity-70">
                 {j.years}
               </div>
@@ -78,7 +81,9 @@ export function ActsIndex() {
               <div>{ev.ru}</div>
               <em className="mt-0.5 block text-[13px] text-(--color-sepia)">{ev.en}</em>
             </div>
-            <div className="text-right text-base font-medium italic text-(--color-rust)">{ev.ref}</div>
+            <div className="text-right text-base font-medium italic text-(--color-rust)">
+              <ScriptureRef refText={ev.ref} />
+            </div>
           </div>
         ))}
       </div>

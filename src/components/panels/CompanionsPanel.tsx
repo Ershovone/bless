@@ -4,6 +4,7 @@ import { CITIES } from "@/data/cities";
 import { COMPANIONS } from "@/data/companions";
 import { useAtlasStore } from "@/hooks/useAtlasStore";
 import { SectionLabel } from "@/components/layout/SectionLabel";
+import { ProseWithRefs } from "@/components/bible/ProseWithRefs";
 
 export function CompanionsPanel() {
   const activeJ = useAtlasStore((s) => s.activeJ);
@@ -63,9 +64,11 @@ export function CompanionsPanel() {
       {active && (
         <div className="mt-3.5 border-t border-dotted border-(--color-sepia-light) pt-3.5 text-[15px] leading-[1.5]">
           <div className="mb-1.5 text-xs uppercase tracking-[0.15em] text-(--color-rust)">
-            {active.meta}
+            <ProseWithRefs text={active.meta} />
           </div>
-          <div className="text-(--color-ink)">{active.note}</div>
+          <div className="text-(--color-ink)">
+            <ProseWithRefs text={active.note} />
+          </div>
         </div>
       )}
     </div>

@@ -6,6 +6,7 @@ import { JOURNEYS } from "@/data/journeys";
 import { TIMELINE_SPANS, YEAR_AXIS_TICKS, YEAR_RANGE } from "@/constants/map";
 import { journeyIdxForYear, useAtlasStore } from "@/hooks/useAtlasStore";
 import { SectionLabel } from "@/components/layout/SectionLabel";
+import { ScriptureRef } from "@/components/bible/ScriptureRef";
 
 const TRACK_HEIGHT = 110;
 const SPAN_TOP = 36;
@@ -128,7 +129,9 @@ export function ChronologyScrubber() {
               <div className="text-xl font-medium">{current.ru}</div>
               <em className="text-[13px] text-(--color-sepia)">{current.en}</em>
             </div>
-            <div className="text-[15px] font-medium italic text-(--color-rust)">{current.ref}</div>
+            <div className="text-[15px] font-medium italic text-(--color-rust)">
+              <ScriptureRef refText={current.ref} />
+            </div>
           </div>
         )}
 

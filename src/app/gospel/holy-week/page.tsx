@@ -18,20 +18,24 @@ export const metadata: Metadata = buildMetadata({
 export default function HolyWeekPage() {
   return (
     <PageBackground>
+      <div
+        className="relative z-10 mx-auto px-5 pt-6"
+        style={{ width: "min(96%, 1500px)" }}
+      >
+        <Link
+          href="/gospel/"
+          className="inline-flex items-center gap-2 border border-(--color-sepia-light) bg-(--color-parchment-light)/70 px-4 py-2 font-sans text-[11px] uppercase tracking-[0.18em] text-(--color-sepia) shadow-[0_2px_8px_-2px_rgba(74,50,30,0.2)] transition-colors hover:border-(--color-ink) hover:bg-(--color-parchment-light) hover:text-(--color-ink)"
+        >
+          <span aria-hidden className="text-base leading-none">←</span>
+          <span>К Евангелию</span>
+        </Link>
+      </div>
       <PageHeader
         activeSlug="gospel"
         titleRu="Страстная неделя"
         titleEn="The Passion Week"
         subtitle="Семь дней — Иерусалим, Нисан 30 н.э."
       />
-      <div className="mx-auto mb-2 px-5 text-center">
-        <Link
-          href="/gospel/"
-          className="inline-flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.2em] text-(--color-sepia) hover:text-(--color-ink)"
-        >
-          ← Вернуться к Евангелию
-        </Link>
-      </div>
       <JerusalemMap />
       <HolyWeekPanel />
       <ResurrectionAppearancesPanel />

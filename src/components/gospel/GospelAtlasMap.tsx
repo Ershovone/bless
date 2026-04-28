@@ -56,8 +56,14 @@ export function GospelAtlasMap({
   const zoomPan = useZoomPan(GOSPEL_MAP_SIZE, setZoomDisplay);
 
   const phasePaths = useMemo<PhasePath[]>(() => {
+    // Каждая фаза начинается с последнего пункта предыдущей — чтобы маршрут
+    // не «телепортировался» между фазами (напр., Капернаум → Перея).
     return GOSPEL_PHASES.map((phase, pi) => {
-      const ids = phase.locations as CityId[];
+      const prevPhase = pi > 0 ? GOSPEL_PHASES[pi - 1] : null;
+      const leadIn = prevPhase
+        ? [prevPhase.locations[prevPhase.locations.length - 1]]
+        : [];
+      const ids = [...leadIn, ...phase.locations] as CityId[];
       if (ids.length < 2) return { phaseIdx: pi, d: "", color: phase.color };
       const d = buildRoutePath(ids, LOCATIONS_AS_CITIES, proj, GOSPEL_BOW_FACTOR);
       return { phaseIdx: pi, d, color: phase.color };

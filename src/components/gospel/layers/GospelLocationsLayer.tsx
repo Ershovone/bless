@@ -27,6 +27,8 @@ type LabelOffset = {
   anchor: "start" | "middle" | "end";
 };
 
+type Bbox = { x: number; y: number; w: number; h: number };
+
 const LABEL_OFFSETS: Record<LabelDir, LabelOffset> = {
   N:  { dx: 0,  dy: -8,  anchor: "middle" },
   S:  { dx: 0,  dy: 13,  anchor: "middle" },
@@ -38,6 +40,36 @@ const LABEL_OFFSETS: Record<LabelDir, LabelOffset> = {
   SW: { dx: -6, dy: 10,  anchor: "end" },
 };
 
+const FONT_SIZE_ACTIVE = 10;
+const FONT_SIZE_INACTIVE = 8.5;
+const CHAR_WIDTH_RATIO = 0.5;   // средняя ширина Cormorant italic в SVG-юнитах
+const LABEL_PAD_X = 4;          // зазор по горизонтали для столкновений
+const LABEL_PAD_Y = 2;          // зазор по вертикали
+const SECONDARY_LABEL_ZOOM = 1.4;
+const INACTIVE_LABEL_ZOOM = 2.4;
+
+/** Прямоугольник лейбла в координатах SVG (для проверки коллизий). */
+function labelBbox(
+  px: number,
+  py: number,
+  offset: LabelOffset,
+  text: string,
+  fontSize: number,
+): Bbox {
+  const w = text.length * fontSize * CHAR_WIDTH_RATIO + LABEL_PAD_X * 2;
+  const h = fontSize * 1.15 + LABEL_PAD_Y * 2;
+  let x = px + offset.dx - LABEL_PAD_X;
+  if (offset.anchor === "middle") x = px + offset.dx - w / 2;
+  else if (offset.anchor === "end") x = px + offset.dx - w + LABEL_PAD_X;
+  // Базовая линия примерно на 0.8 высоты от верха
+  const y = py + offset.dy - fontSize * 0.85 - LABEL_PAD_Y;
+  return { x, y, w, h };
+}
+
+function overlaps(a: Bbox, b: Bbox): boolean {
+  return !(a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y);
+}
+
 type GospelLocationsLayerProps = {
   proj: GeoProjection;
   activeLocations: Set<GospelLocationId>;
@@ -47,6 +79,7 @@ export function GospelLocationsLayer({ proj, activeLocations }: GospelLocationsL
   const hover = useGospelStore((s) => s.hoverLocation);
   const setHover = useGospelStore((s) => s.setHoverLocation);
   const setSelected = useGospelStore((s) => s.setSelectedLocation);
+  const zoom = useGospelStore((s) => s.zoomDisplay);
 
   const projected = useMemo<ProjectedLocation[]>(
     () =>
@@ -69,14 +102,53 @@ export function GospelLocationsLayer({ proj, activeLocations }: GospelLocationsL
     [proj],
   );
 
+  /**
+   * Коллизионная раскладка лейблов (а-ля Google/Yandex Maps).
+   * Берём кандидатов в порядке приоритета:
+   *   1. active + !secondary
+   *   2. active + secondary  (только при zoom >= SECONDARY_LABEL_ZOOM)
+   *   3. inactive            (только при zoom >= INACTIVE_LABEL_ZOOM)
+   * Жадно: каждый следующий лейбл показываем, только если его bbox не
+   * пересекается с уже размещёнными.
+   */
+  const visibleLabels = useMemo(() => {
+    type Candidate = { c: ProjectedLocation; prio: number; fontSize: number };
+    const candidates: Candidate[] = [];
+
+    for (const c of projected) {
+      const inActive = activeLocations.has(c.id);
+      if (inActive && !c.secondary) {
+        candidates.push({ c, prio: 0, fontSize: FONT_SIZE_ACTIVE });
+      } else if (inActive && c.secondary && zoom >= SECONDARY_LABEL_ZOOM) {
+        candidates.push({ c, prio: 1, fontSize: FONT_SIZE_ACTIVE });
+      } else if (!inActive && zoom >= INACTIVE_LABEL_ZOOM) {
+        candidates.push({ c, prio: 2, fontSize: FONT_SIZE_INACTIVE });
+      }
+    }
+    candidates.sort((a, b) => a.prio - b.prio);
+
+    const placed: Bbox[] = [];
+    const result = new Set<GospelLocationId>();
+    for (const { c, fontSize } of candidates) {
+      const text = c.shortLabel ?? c.ru;
+      const offset = LABEL_OFFSETS[c.labelDir];
+      const bbox = labelBbox(c.x, c.y, offset, text, fontSize);
+      if (placed.some((p) => overlaps(p, bbox))) continue;
+      placed.push(bbox);
+      result.add(c.id);
+    }
+    return result;
+  }, [projected, activeLocations, zoom]);
+
   return (
     <>
       {projected.map((c) => {
         const inActive = activeLocations.has(c.id);
         const isHovered = hover === c.id;
-        const showLabel = isHovered || (inActive && !c.secondary);
+        const showLabel = isHovered || visibleLabels.has(c.id);
         const offset = LABEL_OFFSETS[c.labelDir];
         const labelText = c.shortLabel ?? c.ru;
+        const fontSize = inActive ? FONT_SIZE_ACTIVE : FONT_SIZE_INACTIVE;
 
         return (
           <g
@@ -137,7 +209,7 @@ export function GospelLocationsLayer({ proj, activeLocations }: GospelLocationsL
                 x={offset.dx}
                 y={offset.dy}
                 textAnchor={offset.anchor}
-                fontSize={inActive ? 10 : 8.5}
+                fontSize={fontSize}
                 fontFamily={FONT_FAMILIES.serif}
                 fontStyle="italic"
                 fontWeight={inActive ? 500 : 400}

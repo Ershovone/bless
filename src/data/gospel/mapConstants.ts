@@ -13,13 +13,13 @@ export const GOSPEL_MAP_SIZE = {
 export const GOSPEL_BOW_FACTOR = 0.05;
 
 export const JERUSALEM_MAP_BOUNDS = {
-  lonMin: 35.20,
-  lonMax: 35.30,
-  latMin: 31.755,
-  latMax: 31.800,
+  lonMin: 35.218,
+  lonMax: 35.265,
+  latMin: 31.758,
+  latMax: 31.795,
 } as const;
 
 export const JERUSALEM_MAP_SIZE = {
   width: 1400,
-  height: 900,
+  height: 1050,
 } as const;

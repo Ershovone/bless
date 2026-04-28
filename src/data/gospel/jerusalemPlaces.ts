@@ -84,8 +84,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "golgotha",
     ru: "Голгофа",
     en: "Golgotha",
-    lat: 31.7783,
-    lon: 35.2298,
+    lat: 31.7775,
+    lon: 35.2294,
     kind: "execution",
     ref: "Мф 27:33",
     description:
@@ -95,8 +95,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "tomb",
     ru: "Гробница в саду",
     en: "Garden Tomb",
-    lat: 31.7785,
-    lon: 35.2296,
+    lat: 31.7790,
+    lon: 35.2305,
     kind: "tomb",
     ref: "Ин 19:41",
     description:

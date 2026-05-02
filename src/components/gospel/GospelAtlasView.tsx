@@ -2,19 +2,8 @@
 
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { GospelAtlasMap } from "./GospelAtlasMap";
-import { GospelPhaseTabs } from "./controls/GospelPhaseTabs";
-import { GospelInfoCard } from "./controls/GospelInfoCard";
-import { RegionsPanel } from "./panels/RegionsPanel";
-import { GospelTimelinePanel } from "./panels/GospelTimelinePanel";
-import { MiraclesPanel } from "./panels/MiraclesPanel";
-import { ParablesPanel } from "./panels/ParablesPanel";
-import { DiscoursesPanel } from "./panels/DiscoursesPanel";
-import { BeatitudesPanel } from "./panels/BeatitudesPanel";
-import { IAmSayingsPanel } from "./panels/IAmSayingsPanel";
-import { DisciplesPanel } from "./panels/DisciplesPanel";
-import { ResurrectionAppearancesPanel } from "./panels/ResurrectionAppearancesPanel";
-import { GospelComparisonPanel } from "./panels/GospelComparisonPanel";
+import { GospelMapShell } from "./GospelMapShell";
+import { GospelContentTabs } from "./GospelContentTabs";
 import { LocationDetailPanel } from "./panels/LocationDetailPanel";
 import { RegionDetailPanel } from "./panels/RegionDetailPanel";
 import { DiscipleDetailPanel } from "./panels/DiscipleDetailPanel";
@@ -62,20 +51,12 @@ export function GospelAtlasView() {
           titleEn="The Four Gospels"
           subtitle="Жизнь Господа Иисуса Христа · ≈ 5 до н.э. — 30 н.э."
         />
-        <GospelAtlasMap />
-        <GospelPhaseTabs />
-        <GospelInfoCard />
-        <RegionsPanel />
-        <GospelTimelinePanel />
+        {/* Map-first shell: карта + все связанные с ней меню как overlay. */}
+        <GospelMapShell />
+        {/* Анонс отдельной страницы — Страстная неделя. */}
         <HolyWeekTeaser />
-        <MiraclesPanel />
-        <ParablesPanel />
-        <DiscoursesPanel />
-        <BeatitudesPanel />
-        <IAmSayingsPanel />
-        <DisciplesPanel />
-        <ResurrectionAppearancesPanel />
-        <GospelComparisonPanel />
+        {/* Длинные секции (не связанные напрямую с картой) — в табах со sticky nav. */}
+        <GospelContentTabs />
       </div>
 
       <div className="md:hidden">

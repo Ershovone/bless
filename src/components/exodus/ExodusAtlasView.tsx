@@ -1,11 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import { ExodusAtlasMap } from "./ExodusAtlasMap";
-import { ExodusPhaseTabs } from "./controls/ExodusPhaseTabs";
-import { ExodusInfoCard } from "./controls/ExodusInfoCard";
-import { PeoplesPanel } from "./panels/PeoplesPanel";
-import { PlaguesPanel } from "./panels/PlaguesPanel";
+import { ExodusMapShell } from "./ExodusMapShell";
+import { ExodusContentTabs } from "./ExodusContentTabs";
 import { PeopleDetailPanel } from "./panels/PeopleDetailPanel";
 import { StationDetailPanel } from "./panels/StationDetailPanel";
 import { ExodusMobileShell } from "./mobile/ExodusMobileShell";
@@ -21,11 +18,10 @@ export function ExodusAtlasView() {
           titleEn="The Exodus from Egypt"
           subtitle="Книга Исход и Чисел · Liber Exodus · ~1446–1406 до Р.Х."
         />
-        <ExodusAtlasMap />
-        <ExodusPhaseTabs />
-        <ExodusInfoCard />
-        <PeoplesPanel />
-        <PlaguesPanel />
+        {/* Map-first shell: фазы, контекст и народы — overlay на карте. */}
+        <ExodusMapShell />
+        {/* Длинные секции — в табах со sticky nav. */}
+        <ExodusContentTabs />
       </div>
 
       <div className="md:hidden">

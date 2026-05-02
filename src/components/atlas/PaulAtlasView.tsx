@@ -1,15 +1,8 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
-import { AtlasMap } from "@/components/atlas/AtlasMap";
-import { JourneyTabs } from "@/components/controls/JourneyTabs";
-import { InfoCard } from "@/components/controls/InfoCard";
-import { ViewToggles } from "@/components/controls/ViewToggles";
-import { CompanionsPanel } from "@/components/panels/CompanionsPanel";
-import { LegDistancesPanel } from "@/components/panels/LegDistancesPanel";
-import { ChronologyScrubber } from "@/components/panels/ChronologyScrubber";
-import { ActsIndex } from "@/components/panels/ActsIndex";
-import { ScriptureQuote } from "@/components/panels/ScriptureQuote";
+import { PaulMapShell } from "@/components/atlas/PaulMapShell";
+import { PaulContentTabs } from "@/components/atlas/PaulContentTabs";
 import { CityDetailPanel } from "@/components/panels/CityDetailPanel";
 import { BibleReader } from "@/components/bible/BibleReader";
 import { MobileAtlasShell } from "@/components/layout/MobileAtlasShell";
@@ -46,15 +39,10 @@ export function PaulAtlasView({ initialJourneyIdx }: PaulAtlasViewProps) {
           titleEn="The Journeys of the Apostle Paul"
           subtitle="Деяния святых Апостолов · Acta Apostolorum · 46–62 A.D."
         />
-        <AtlasMap />
-        <JourneyTabs />
-        <InfoCard />
-        <ViewToggles />
-        <CompanionsPanel />
-        <LegDistancesPanel />
-        <ChronologyScrubber />
-        <ActsIndex />
-        <ScriptureQuote />
+        {/* Map-first shell: путешествия, контекст и слои — overlay на карте. */}
+        <PaulMapShell />
+        {/* Длинные секции — в табах со sticky nav. */}
+        <PaulContentTabs />
       </div>
 
       <div className="md:hidden">

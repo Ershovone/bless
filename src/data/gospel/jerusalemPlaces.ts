@@ -1,14 +1,15 @@
 import type { JerusalemPlace, JerusalemPlaceId } from "@/types/gospel";
 
-// Координаты — в традиционной локализации Старого города Иерусалима
-// и его ближайших окрестностей (Елеон, Гефсимания, Вифания).
+// Координаты соответствуют классической реконструкции Иерусалима I века:
+// Старый город ~ 1×1 км, Храмовая платформа Ирода 488×280 м в СВ углу,
+// Город Давида — узкий «язык» к югу, Елеонская гора — к востоку через Кедрон.
 export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
   temple: {
     id: "temple",
     ru: "Иерусалимский Храм",
     en: "Temple Mount",
-    lat: 31.7780,
-    lon: 35.2354,
+    lat: 31.7775,
+    lon: 35.2370,
     kind: "temple",
     ref: "Мф 21:12–17",
     description:
@@ -18,8 +19,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "upper_room",
     ru: "Сионская горница",
     en: "Upper Room",
-    lat: 31.7715,
-    lon: 35.2294,
+    lat: 31.7740,
+    lon: 35.2295,
     kind: "site",
     ref: "Мк 14:13–15",
     description:
@@ -29,7 +30,7 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "caiaphas_palace",
     ru: "Дворец Каиафы",
     en: "Palace of Caiaphas",
-    lat: 31.7720,
+    lat: 31.7745,
     lon: 35.2305,
     kind: "palace",
     ref: "Мф 26:57",
@@ -40,8 +41,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "pilate_praetorium",
     ru: "Преториум Пилата",
     en: "Pilate's Praetorium",
-    lat: 31.7795,
-    lon: 35.2353,
+    lat: 31.7805,
+    lon: 35.2355,
     kind: "palace",
     ref: "Ин 19:13",
     description:
@@ -51,8 +52,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "herod_antipas",
     ru: "Дворец Ирода Антипы",
     en: "Herod Antipas's quarters",
-    lat: 31.7766,
-    lon: 35.2280,
+    lat: 31.7790,
+    lon: 35.2285,
     kind: "palace",
     ref: "Лк 23:7–12",
     description:
@@ -62,8 +63,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "gethsemane",
     ru: "Гефсиманский сад",
     en: "Garden of Gethsemane",
-    lat: 31.7791,
-    lon: 35.2406,
+    lat: 31.7790,
+    lon: 35.2425,
     kind: "garden",
     ref: "Мф 26:36",
     description:
@@ -73,8 +74,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "mount_of_olives",
     ru: "Елеонская гора",
     en: "Mount of Olives",
-    lat: 31.7782,
-    lon: 35.2459,
+    lat: 31.7780,
+    lon: 35.2510,
     kind: "mountain",
     ref: "Деян 1:12",
     description:
@@ -84,30 +85,30 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "golgotha",
     ru: "Голгофа",
     en: "Golgotha",
-    lat: 31.7775,
-    lon: 35.2294,
+    lat: 31.7848,
+    lon: 35.2308,
     kind: "execution",
     ref: "Мф 27:33",
     description:
-      "«Лобное место» — холм за городскими воротами. Здесь Иисус был распят между двумя разбойниками. Тьма с шестого до девятого часа. «Совершилось!» Завеса в Храме разодралась надвое.",
+      "«Лобное место» — холм за городскими воротами, в районе Безеты, который был обнесён стеной только позже, при Агриппе I. Здесь Иисус был распят между двумя разбойниками. Тьма с шестого до девятого часа. «Совершилось!» Завеса в Храме разодралась надвое. «Иисус, дабы освятить людей Кровию Своею, пострадал вне врат» (Евр 13:12).",
   },
   tomb: {
     id: "tomb",
     ru: "Гробница в саду",
     en: "Garden Tomb",
-    lat: 31.7790,
-    lon: 35.2305,
+    lat: 31.7855,
+    lon: 35.2312,
     kind: "tomb",
     ref: "Ин 19:41",
     description:
-      "Новая гробница, высеченная в скале — собственность Иосифа Аримафейского. На третий день она оказалась пустой: «Его нет здесь — Он воскрес».",
+      "Новая гробница, высеченная в скале — собственность Иосифа Аримафейского, в саду близ Голгофы за городской стеной. На третий день она оказалась пустой: «Его нет здесь — Он воскрес».",
   },
   bethesda: {
     id: "bethesda",
     ru: "Купальня Вифезда",
     en: "Pool of Bethesda",
-    lat: 31.7811,
-    lon: 35.2360,
+    lat: 31.7818,
+    lon: 35.2375,
     kind: "pool",
     ref: "Ин 5:2",
     description:
@@ -117,8 +118,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "siloam",
     ru: "Купальня Силоам",
     en: "Pool of Siloam",
-    lat: 31.7706,
-    lon: 35.2353,
+    lat: 31.7676,
+    lon: 35.2335,
     kind: "pool",
     ref: "Ин 9:7",
     description:
@@ -129,7 +130,7 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     ru: "Крепость Антония",
     en: "Antonia Fortress",
     lat: 31.7805,
-    lon: 35.2360,
+    lon: 35.2356,
     kind: "palace",
     ref: "Деян 21:34",
     description:
@@ -139,8 +140,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "damascus_gate",
     ru: "Дамасские ворота",
     en: "Damascus Gate",
-    lat: 31.7820,
-    lon: 35.2306,
+    lat: 31.7818,
+    lon: 35.2336,
     kind: "gate",
     description:
       "Северные ворота города. Через них в это время выводили на казнь — за городскую стену.",
@@ -149,8 +150,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "sheep_gate",
     ru: "Овечьи ворота",
     en: "Sheep Gate",
-    lat: 31.7811,
-    lon: 35.2370,
+    lat: 31.7813,
+    lon: 35.2375,
     kind: "gate",
     ref: "Ин 5:2",
     description:
@@ -160,8 +161,8 @@ export const JERUSALEM_PLACES: Record<JerusalemPlaceId, JerusalemPlace> = {
     id: "east_gate",
     ru: "Восточные (Золотые) ворота",
     en: "Eastern Gate",
-    lat: 31.7785,
-    lon: 35.2375,
+    lat: 31.7775,
+    lon: 35.2392,
     kind: "gate",
     description:
       "Ворота напротив Елеонской горы. Через них Иисус торжественно входил в Иерусалим в Вербное воскресенье.",
